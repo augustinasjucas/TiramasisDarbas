@@ -13,7 +13,7 @@
 <div class="AllQuestions" id="AllQuestionsHolder"></div>
 <script>
 	
-	var AllQuestions;
+	var AllQuestions = [];
 	
 	var socket = io.connect();
 	socket.emit('AskForQuestions');
@@ -33,20 +33,43 @@
 		Td.setAttribute('id', id);
 		Td.setAttribute('class', clas);
 		Td.innerHTML = value;
+		return Td;
 	}
-	function CreateOptionsString(options, index){
-		var Return = '';
+	function CreateDiv(id, clas, value){
+		var Div = document.createElement('div');
+		Div.setAttribute('id', id);
+		Div.setAttribute('class', clas);
+		Div.innerHTML = value;
+		return Div;
+	}
+	function CreateBr(){
+		var Br = document.createElement('br');
+		return Br;
+	}
+	
+	function CreateOptionsField(options, index){
 		
-		
-		
+		var Return = CreateTd('OptionsField'+index, 'OptionField', '');
+		console.log(options);
+		for(var i = 0; i < options.length; i++){
+			var Div = CreateDiv('', '', (i+1) + ') ' + options[i]);
+			if(i != options.length-1) Div.append(CreateBr());
+			Return.append(Div);
+		}
+		return Return;
+	
 	}
 	function CreateOpen(question, index){
 		
-		var Tr = CreateTr('Question'+index, 'QuestionRow Open');
+		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
 		
 		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
-		var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', CreateOptionsString(question.Options, index));
-	
+		var OptionsField = CreateOptionsField(question.Options, index);
+
+		Tr.append(QuestionField);
+		Tr.append(OptionsField);
+		
+		return Tr;
 	}
 	function CreateTable(id, clas, headers){
 		var Table = document.createElement('table');
@@ -71,7 +94,9 @@
 		var MainTable = CreateTable('MainTable', 'MainTable', ['Klausimas', 'Pasirinkimo variantai', 'Atsakymas', 'Funkcijos']);
 		
 		Holder.append(MainTable);
-		
+		for(var i = 0; i < AllQuestions.length; i++){
+			if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateOpen(AllQuestions[i], i));
+		}
 	}
 </script>
 
