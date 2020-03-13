@@ -1,29 +1,47 @@
 <html>
 <style>
+	body{
+		margin: 1%;
+	}
 	.AllQuestionsHolder{
-		width: 70%;
+		width: 90%;
+	}
+	.MainTable{
+		width: 100%;
 	}
 	.MainTable, .MainTable th, td{
+		padding: 0.2%;
 		border: 1px solid black;
 	}
-	.RemoveQuestion .ChangeQuestion{
-		width: 10px;
+	.MainTable td, th{
+		width: 25%;
+	}
+	.RemoveQuestion, .ChangeQuestion{
+		width: 100%;
 	}
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <h1 class="MainName">Klausimu duomenu baze</h1>
-<div class="AllQuestions" id="AllQuestionsHolder"></div>
+<div class="AllQuestionsHolder" id="AllQuestionsHolder"></div>
 <script>
-	const EditQuestion = 'Redaguoti klausimą';
-	const Unspecified = 'Nenurodytas';
-	const Question = 'Klausimas';
-	const ChoosingOptions = 'Pasirinkimo variantai';
-	const Answer = 'Atsakymas';
-	const Functions = 'Funkcijos';
-	const ToUpdateQuestion = 'Redaguoti klausimą';
-	const ToRemoveQuestion = 'Panaikinti klausimą';
-	var AllQuestions = [];
+	
+	var Dictionary = {};
+
+	Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
+	Dictionary['EditQuestion'] = 'Redaguoti klausimą';
+	Dictionary['Unspecified'] = 'Nenurodytas';
+	Dictionary['Question'] = 'Klausimas';
+	Dictionary['ChoosingOptions'] = 'Pasirinkimo variantai';
+	Dictionary['Answer'] = 'Atsakymas'; 
+	Dictionary['Functions'] = 'Funkcijos';
+	Dictionary['ToUpdateQuestion'] = 'Redaguoti klausimą';
+	Dictionary['ToRemoveQuestion'] = 'Panaikinti klausimą';
+	Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
+	Dictionary['Save'] = 'Išsaugoti';
+	
+	var AllQuestions = [];			// Global array wiht all questions, which were downloaded from sever
+	var NumberOfOptions = [];		// Global array with numbers of choices for each closed question
 	
 	var socket = io.connect();
 	socket.emit('AskForQuestions');
@@ -33,7 +51,7 @@
 		LoadAllQuestions();
 	});
 	function GetAnswer(answer, index){
-		if(answer == '' && AllQuestions[index].Type == 'Open') return Unspecified;
+		if(answer == '' && AllQuestions[index].Type == 'Open') return Dictionary['Unspecified'];
 		if(answer != '' && AllQuestions[index].Type == 'Open') return answer;
 		return answer+1;
 	}
@@ -65,11 +83,16 @@
 		Div.innerHTML = value;
 		return Div;
 	}
-	function CreateBr(){
+	function CreateBr(id = ''){
 		var Br = document.createElement('br');
 		return Br;
 	}
-	
+	function CreateP(id, clas){
+		var P = document.createElement('p');
+		P.setAttribute('id', id);
+		P.setAttribute('class', clas);
+		return P;
+	}
 	function CreateOptionsField(options, index){
 		var Return = CreateTd('OptionsField'+index, 'OptionField', '');
 		console.log(options);
@@ -87,14 +110,14 @@
 	
 	function CreateFunctionsField(index){
 		var Td = CreateTd('FunctionsField'+index, 'FunctionsField', '');
-		Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', ToUpdateQuestion));
+		Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', Dictionary['ToUpdateQuestion']));
 		Td.append(CreateBr());
-		Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', ToRemoveQuestion));
+		Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));
 		
 		return Td;
 	}
 	
-	function CreateOpen(question, index){
+	function CreateClosed(question, index){
 		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
 		
 		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
@@ -106,6 +129,22 @@
 		Tr.append(OptionsField);
 		Tr.append(AnswerField);
 		Tr.append(FunctionsField);
+		
+		return Tr;
+	}
+	function CreateOpen(question, index){
+		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Closed');
+		
+		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+		var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
+		var AnswerField = CreateAnswerField(question.Answer, index);
+		var FunctionsField = CreateFunctionsField(index);
+		
+		Tr.append(QuestionField);
+		Tr.append(OptionsField);
+		Tr.append(AnswerField);
+		Tr.append(FunctionsField);
+		
 		return Tr;
 	}
 	function CreateTable(id, clas, headers){
@@ -124,14 +163,68 @@
 		return Table;
 	}
 	function LoadAllQuestions(){
-		
 		var Holder = document.getElementById('AllQuestionsHolder');
-		var MainTable = CreateTable('MainTable', 'MainTable', [Question, ChoosingOptions, Answer, Functions]);
+		var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
 		
 		Holder.append(MainTable);
 		for(var i = 0; i < AllQuestions.length; i++){
-			if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateOpen(AllQuestions[i], i));
+			if(AllQuestions[i].Hidden == 1) continue;
+			if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateClosed(AllQuestions[i], i));
+			if(AllQuestions[i].Type == 'Open') MainTable.append(CreateOpen(AllQuestions[i], i));
+			NumberOfOptions.push(-1);
 		}
+	}
+	function TextInput(id, clas, value){
+		var Input = document.createElement('input');
+		Input.setAttribute('type', 'text');
+		Input.setAttribute('id', id);
+		Input.setAttribute('class', clas);
+		Input.setAttribute('value', value);
+		return Input;
+	}
+	function TextArea(id, clas, value){
+		var Input = document.createElement('textarea');
+		Input.setAttribute('type', 'text');
+		Input.setAttribute('id', id);
+		Input.setAttribute('class', clas);
+		Input.innerHTML = value;
+		return Input;
+	}
+	
+	function TransformQuestionHolder(index){
+		var Holder = document.getElementById('QuestionField'+index);
+		Holder.innerHTML = '';
+		Holder.append(TextInput('NewQuestionInput'+index, 'NewQuestionInput', AllQuestions[index].Question));
+	}
+	function TransformAnswerHolder(index){
+		var Holder = document.getElementById('AnswerField'+index);
+		Holder.innerHTML = '';
+		if(AllQuestions[index].Type == 'Closed') Holder.append(TextInput('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer+1));
+		if(AllQuestions[index].Type == 'Open') Holder.append(TextArea('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer));
+	}
+	function TransformFunctionsHolder(index){
+		var RemoveButton = document.getElementById('RemoveQuestion'+index);
+		var ChangeButton = document.getElementById('ChangeQuestion'+index);
+		RemoveButton.setAttribute('onClick', 'RemoveQuestion('+index+')');
+		ChangeButton.setAttribute('onClick', 'SaveQuestion('+index+')');
+		ChangeButton.innerHTML = Dictionary['Save'];
+	}
+	function TransformOptionsHolder(index){
+		if(AllQuestions[index].Type == 'Open') return;
+		//var OptionsHolder = 
+		NumberOfOptions[index] = AllQuestions[index].Options.length;
+		
+		for(var i = 0; i < AllQuestions[index].Options.length; i++){
+			var P = CreateP('Option'+index+'-'+i+'ChangeHolder', 'OptionChangeHolder', '');
+			P.append(TextInput('Option'+index+'-'+i, 'Change', 'OptionChange', AllQuestions[index].Options[i]));
+			
+		}
+	}
+	function ChangeQuestion(index){
+		TransformQuestionHolder(index);
+		TransformAnswerHolder(index);
+	//	TransformOptionsHolder(index);
+		TransformFunctionsHolder(index);
 	}
 </script>
 
