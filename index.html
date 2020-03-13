@@ -1,0 +1,38 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<h1>MOKINIO INTERFACE</h1>
+<h2 id="vardoVieta"></h1>
+<form id="messageForm">
+	<input placeholder="Vardas"type="text" class="form-control" id="message" />
+	<br />
+	<br />
+	<input type="submit" />
+
+</form>
+
+<script>
+
+	$(function(){
+		var socket = io.connect();
+		var $messageForm = $('#messageForm');
+		var $message = $('#message');
+		var $vardoVieta = $('#vardoVieta');
+		
+		$messageForm.submit(function(e){	///ISSIUNCIAME VARDA
+			e.preventDefault();
+			console.log('submitted');
+			socket.emit('vardas', $message.val());
+			$vardoVieta.append($message.val());
+			$message.val('');
+		});
+		socket.on('faze2', function(data){
+			console.log('FAZE2');
+			$messageForm.hide();
+
+		});
+	});
+</script>
+
+</html>

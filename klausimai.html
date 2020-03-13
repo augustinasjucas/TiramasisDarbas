@@ -1,0 +1,78 @@
+<html>
+<style>
+	.AllQuestionsHolder{
+		width: 70%;
+	}
+	.MainTable, .MainTable th, td{
+		border: 1px solid black;
+	}
+</style>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<h1 class="MainName">Klausimu duomenu baze</h1>
+<div class="AllQuestions" id="AllQuestionsHolder"></div>
+<script>
+	
+	var AllQuestions;
+	
+	var socket = io.connect();
+	socket.emit('AskForQuestions');
+	socket.on('GetAllQuestions', function(data){
+		AllQuestions = data;
+		console.log(data);
+		LoadAllQuestions();
+	});
+	function CreateTr(id, clas){
+		var Tr = document.createElement('tr');
+		Tr.setAttribute('id', id);
+		Tr.setAttribute('class', clas);
+		return Tr;
+	}
+	function CreateTd(id, clas, value){
+		var Td = document.createElement('td');
+		Td.setAttribute('id', id);
+		Td.setAttribute('class', clas);
+		Td.innerHTML = value;
+	}
+	function CreateOptionsString(options, index){
+		var Return = '';
+		
+		
+		
+	}
+	function CreateOpen(question, index){
+		
+		var Tr = CreateTr('Question'+index, 'QuestionRow Open');
+		
+		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+		var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', CreateOptionsString(question.Options, index));
+	
+	}
+	function CreateTable(id, clas, headers){
+		var Table = document.createElement('table');
+		Table.setAttribute('id', id);
+		Table.setAttribute('class', clas);
+		
+		var tr = CreateTr('TableHeaders', 'TableHeaders');
+		
+		for(var i = 0; i < headers.length; i++){
+			var th = document.createElement('th');
+			th.innerHTML = headers[i];
+			tr.append(th);
+		}
+		console.log(tr);
+		Table.append(tr);
+		console.log(Table);
+		return Table;
+	}
+	function LoadAllQuestions(){
+		
+		var Holder = document.getElementById('AllQuestionsHolder');
+		var MainTable = CreateTable('MainTable', 'MainTable', ['Klausimas', 'Pasirinkimo variantai', 'Atsakymas', 'Funkcijos']);
+		
+		Holder.append(MainTable);
+		
+	}
+</script>
+
+</html>

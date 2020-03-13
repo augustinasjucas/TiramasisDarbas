@@ -1,0 +1,41 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<h1>MOKYTOJO INTERFACE</h1>
+
+<form id="pridekTesta">
+	<p>Įveskite norimo testo pridėjimą: </p>
+	<input id="pavadinimas" type="text" /> <br />
+	<textarea id="listas"></textarea>
+	<br />
+	<input type="submit" />
+
+</form>
+
+<script>
+
+	$(function(){
+		var socket = io.connect();
+		
+		$('#pridekTesta').submit(function(e){
+			e.preventDefault();
+			console.log('Siunciamas testas');
+			var stringas = $('#listas').val();
+			var skaiciai = stringas.split(',').map(Number);
+			
+			var testas = {pavadinimas:$('#pavadinimas').val(), klausimai:[], laikas: 100, kodas: -1};
+			socket.emit('pridekTesta', testas);
+		});
+		socket.on('jauUzimtasTestas', function(data){
+			console.log('Testas Jau Uzimtas');
+			//$('#pridekTesta').val('');
+		});
+		socket.on('sekmingaiPridetasTestas', function(data){
+			console.log('Testas sekmingai pridetas');
+			$('#pridekTesta').val('Prideta sekmingai');
+		});
+	});
+</script>
+
+</html>
