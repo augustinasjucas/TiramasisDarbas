@@ -6,13 +6,23 @@
 	.MainTable, .MainTable th, td{
 		border: 1px solid black;
 	}
+	.RemoveQuestion .ChangeQuestion{
+		width: 10px;
+	}
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <h1 class="MainName">Klausimu duomenu baze</h1>
 <div class="AllQuestions" id="AllQuestionsHolder"></div>
 <script>
-	
+	const EditQuestion = 'Redaguoti klausimą';
+	const Unspecified = 'Nenurodytas';
+	const Question = 'Klausimas';
+	const ChoosingOptions = 'Pasirinkimo variantai';
+	const Answer = 'Atsakymas';
+	const Functions = 'Funkcijos';
+	const ToUpdateQuestion = 'Redaguoti klausimą';
+	const ToRemoveQuestion = 'Panaikinti klausimą';
 	var AllQuestions = [];
 	
 	var socket = io.connect();
@@ -22,6 +32,19 @@
 		console.log(data);
 		LoadAllQuestions();
 	});
+	function GetAnswer(answer, index){
+		if(answer == '' && AllQuestions[index].Type == 'Open') return Unspecified;
+		if(answer != '' && AllQuestions[index].Type == 'Open') return answer;
+		return answer+1;
+	}
+	function CreateButton(id, clas, onClick, value){
+		var Button = document.createElement('button');
+		Button.setAttribute('id', id);
+		Button.setAttribute('class', clas);
+		Button.setAttribute('onClick', onClick);
+		Button.innerHTML = value;
+		return Button;
+	}
 	function CreateTr(id, clas){
 		var Tr = document.createElement('tr');
 		Tr.setAttribute('id', id);
@@ -48,7 +71,6 @@
 	}
 	
 	function CreateOptionsField(options, index){
-		
 		var Return = CreateTd('OptionsField'+index, 'OptionField', '');
 		console.log(options);
 		for(var i = 0; i < options.length; i++){
@@ -57,18 +79,33 @@
 			Return.append(Div);
 		}
 		return Return;
-	
 	}
-	function CreateOpen(question, index){
+	function CreateAnswerField(answer, index){
+		var Td = CreateTd('AnswerField'+index, 'AnswerField', GetAnswer(answer, index));
+		return Td;
+	}
+	
+	function CreateFunctionsField(index){
+		var Td = CreateTd('FunctionsField'+index, 'FunctionsField', '');
+		Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', ToUpdateQuestion));
+		Td.append(CreateBr());
+		Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', ToRemoveQuestion));
 		
+		return Td;
+	}
+	
+	function CreateOpen(question, index){
 		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
 		
 		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
 		var OptionsField = CreateOptionsField(question.Options, index);
-
+		var AnswerField = CreateAnswerField(question.Answer, index);
+		var FunctionsField = CreateFunctionsField(index);
+		
 		Tr.append(QuestionField);
 		Tr.append(OptionsField);
-		
+		Tr.append(AnswerField);
+		Tr.append(FunctionsField);
 		return Tr;
 	}
 	function CreateTable(id, clas, headers){
@@ -83,15 +120,13 @@
 			th.innerHTML = headers[i];
 			tr.append(th);
 		}
-		console.log(tr);
 		Table.append(tr);
-		console.log(Table);
 		return Table;
 	}
 	function LoadAllQuestions(){
 		
 		var Holder = document.getElementById('AllQuestionsHolder');
-		var MainTable = CreateTable('MainTable', 'MainTable', ['Klausimas', 'Pasirinkimo variantai', 'Atsakymas', 'Funkcijos']);
+		var MainTable = CreateTable('MainTable', 'MainTable', [Question, ChoosingOptions, Answer, Functions]);
 		
 		Holder.append(MainTable);
 		for(var i = 0; i < AllQuestions.length; i++){
