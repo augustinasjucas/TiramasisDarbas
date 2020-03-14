@@ -130,5 +130,11 @@ io.sockets.on('connection', function(socket){
 	socket.on('RemoveQuestion', function(data){
 		visiKlausimai.klausimai[data].Hidden = 1;
 	});
+	socket.on('AddNewQuestion', function(data){
+		var PastIndex = data.pastIndex;
+		var Question = data.question;
+		visiKlausimai.klausimai.push(Question);
+		socket.emit('SavedNewQuestion', {newIndex: visiKlausimai.klausimai.length-1, oldIndex:PastIndex});
+	});
 	
 });

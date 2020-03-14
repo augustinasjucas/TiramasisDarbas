@@ -23,7 +23,13 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <h1 class="MainName">Klausimu duomenu baze</h1>
-<div class="AllQuestionsHolder" id="AllQuestionsHolder"></div>
+<div class="FullQuestions">
+	<div class="AllQuestionsHolder" id="AllQuestionsHolder"></div>
+	<div class="BothButtons">
+		<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
+		<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
+	</div>
+</div>
 <script>
 	
 	var Dictionary = {};
@@ -43,6 +49,9 @@
 	
 	var AllQuestions = [];			// Global array wiht all questions, which were downloaded from sever
 	var NumberOfOptions = [];		// Global array with numbers of choices for each closed question
+	var IndicesOfNewQuestions = [];
+	var IsPressed = [];
+	var RealIndex = [];
 	
 	var socket = io.connect();
 	socket.emit('AskForQuestions');
@@ -193,6 +202,7 @@
 			if(AllQuestions[i].Hidden == 1) continue;
 			if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateClosed(AllQuestions[i], i));
 			if(AllQuestions[i].Type == 'Open') MainTable.append(CreateOpen(AllQuestions[i], i));
+			RealIndex[i] = i;
 			NumberOfOptions.push(-1);
 		}
 	}
@@ -312,6 +322,12 @@
 		Tr.append(AnswerField);
 		Tr.append(FunctionsField);
 	}
+	function NewClosedQuestionForm(){
+		return {Hidden: 0, Type: 'Closed', Subject: '', Question:'', Answer:0, Options:['', '']};
+	}
+	function NewOpenQuestionForm(){
+		return {Hidden: 0, Type: 'Open', Subject: '', Question:'', Answer:''};
+	}
 	function UpdateOpenQuestion(question, index){
 		var Tr = document.getElementById('QuestionRow'+index);
 		Tr.innerHTML = '';
@@ -327,14 +343,44 @@
 		Tr.append(AnswerField);
 		Tr.append(FunctionsField);
 	}
+	function QuestionIsNew(index){
+		var Return = false;
+		for(var i = 0; i < IndicesOfNewQuestions.length; i++){
+			if(IndicesOfNewQuestions[i] == index) Return = true;
+		}
+		return Return;
+	}
+	function DeleteFromNew(index){
+		for(var i = 0; i < IndicesOfNewQuestions.length; i++){
+			if(IndicesOfNewQuestions[i] == index){
+				IndicesOfNewQuestions.splice(i, 1);
+				break;
+			} ///// Kas jei per daug pridedame?? 
+		}
+	}
+
+	socket.on('SavedNewQuestion', function (data){
+		var NewIndex = data.newIndex;
+		var OldIndex = data.oldIndex;
+		DeleteFromNew(OldIndex);
+		IsPressed[OldIndex] = false;
+		RealIndex[OldIndex] = NewIndex
+	});
 	function SaveClosedQuestion(index){
-		var ThisQuestion = {Hidden: 0, Type: 'Closed', Subject: '', Question:'', Answer:0, Options:[]};
+		var ThisQuestion = NewClosedQuestionForm();
 		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
 		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
 		ThisQuestion.Answer = ConvertToInt(document.getElementById('NewAnswerInput'+index).value)-1;
 		ThisQuestion.Options = GetAllOptions(index);
 		if(FitsAsClosed(ThisQuestion)){
-			socket.emit('EditQuestion', {'index': index, 'question': ThisQuestion});
+			if(QuestionIsNew(index) && !IsPressed[index]){
+				IsPressed[index] = true;
+				AllQuestions[index] = ThisQuestion;
+				socket.emit('AddNewQuestion', {question: ThisQuestion, pastIndex: index});
+				UpdateClosedQuestion(ThisQuestion, index);
+				return;
+			}
+			socket.emit('EditQuestion', {'index': RealIndex[index], 'question': ThisQuestion});
 			AllQuestions[index] = ThisQuestion;
 			UpdateClosedQuestion(ThisQuestion, index);
 		}else{
@@ -342,12 +388,19 @@
 		}
 	}
 	function SaveOpenQuestion(index){
-		var ThisQuestion = {Hidden: 0, Type: 'Open', Subject: '', Question:'', Answer:0};
+		var ThisQuestion = NewOpenQuestionForm();
 		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
 		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
 		ThisQuestion.Answer = document.getElementById('NewAnswerInput'+index).value;
 		if(FitsAsOpen(ThisQuestion)){
-			socket.emit('EditQuestion', {'index': index, 'question': ThisQuestion});
+			if(QuestionIsNew(index) && !IsPressed[index]){
+				AllQuestions[index] = ThisQuestion;
+				IsPressed[index] = true;
+				socket.emit('AddNewQuestion', {question: ThisQuestion, pastIndex: index});
+				UpdateOpenQuestion(ThisQuestion, index);
+				return;
+			}
+			socket.emit('EditQuestion', {'index': RealIndex[index], 'question': ThisQuestion});
 			AllQuestions[index] = ThisQuestion;
 			UpdateOpenQuestion(ThisQuestion, index);
 		}else{
@@ -360,8 +413,27 @@
 	}
 	function RemoveQuestion(index){
 		RemoveElementById('QuestionRow'+index);
-		socket.emit('RemoveQuestion', index);
+		if(!QuestionIsNew(index))socket.emit('RemoveQuestion', RealIndex[index]);
 	}
+	function CreateNewClosedQuestion(){
+		var index = AllQuestions.length;
+		var NewQuestion = NewClosedQuestionForm();
+		var Holder = document.getElementById('MainTable');
+		IndicesOfNewQuestions.push(index);
+		AllQuestions.push(NewQuestion);
+		Holder.append(CreateClosed(NewQuestion, index));
+		ChangeQuestion(index);
+	}
+	function CreateNewOpenQuestion(){
+		var index = AllQuestions.length;
+		var NewQuestion = NewOpenQuestionForm();
+		var Holder = document.getElementById('MainTable');
+		IndicesOfNewQuestions.push(index);
+		AllQuestions.push(NewQuestion);
+		Holder.append(CreateOpen(NewQuestion, index));
+		ChangeQuestion(index);
+	}
+	
 </script>
 
 </html>
