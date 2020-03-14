@@ -14,7 +14,7 @@
 		border: 1px solid black;
 	}
 	.MainTable td, th{
-		width: 25%;
+		width: 20%;
 	}
 	.RemoveQuestion, .ChangeQuestion{
 		width: 100%;
@@ -33,7 +33,8 @@
 	Dictionary['Unspecified'] = 'Nenurodytas';
 	Dictionary['Question'] = 'Klausimas';
 	Dictionary['ChoosingOptions'] = 'Pasirinkimo variantai';
-	Dictionary['Answer'] = 'Atsakymas'; 
+	Dictionary['Answer'] = 'Atsakymas';
+	Dictionary['Subject'] = 'Mokomasis dalykas'; 
 	Dictionary['Functions'] = 'Funkcijos';
 	Dictionary['ToUpdateQuestion'] = 'Redaguoti klausimą';
 	Dictionary['ToRemoveQuestion'] = 'Panaikinti klausimą';
@@ -50,6 +51,22 @@
 		console.log(data);
 		LoadAllQuestions();
 	});
+	function ConvertToInt(str){
+		var Return = 0;
+		for(var i = 0; i < str.length; i++){ // "123" -> 1 -> 10 +2 -> 120 + 3
+			if(0 <= str[i]-'0' && str[i]-'0' <= 9) Return = Return*10 + (str[i]-'0');
+			else {
+				Return = -1;
+				break;
+			}
+		}
+		console.log(str + ' -> ' + Return);
+		return Return;
+	}
+	function RemoveElementById(id) {
+		var elem = document.getElementById(id);
+		elem.parentNode.removeChild(elem);
+	}
 	function GetAnswer(answer, index){
 		if(answer == '' && AllQuestions[index].Type == 'Open') return Dictionary['Unspecified'];
 		if(answer != '' && AllQuestions[index].Type == 'Open') return answer;
@@ -120,11 +137,13 @@
 	function CreateClosed(question, index){
 		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
 		
+		var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
 		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
 		var OptionsField = CreateOptionsField(question.Options, index);
 		var AnswerField = CreateAnswerField(question.Answer, index);
 		var FunctionsField = CreateFunctionsField(index);
 		
+		Tr.append(SubjectField);
 		Tr.append(QuestionField);
 		Tr.append(OptionsField);
 		Tr.append(AnswerField);
@@ -135,11 +154,13 @@
 	function CreateOpen(question, index){
 		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Closed');
 		
+		var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
 		var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
 		var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
 		var AnswerField = CreateAnswerField(question.Answer, index);
 		var FunctionsField = CreateFunctionsField(index);
 		
+		Tr.append(SubjectField);
 		Tr.append(QuestionField);
 		Tr.append(OptionsField);
 		Tr.append(AnswerField);
@@ -164,7 +185,7 @@
 	}
 	function LoadAllQuestions(){
 		var Holder = document.getElementById('AllQuestionsHolder');
-		var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
+		var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
 		
 		Holder.append(MainTable);
 		for(var i = 0; i < AllQuestions.length; i++){
@@ -174,7 +195,7 @@
 			NumberOfOptions.push(-1);
 		}
 	}
-	function TextInput(id, clas, value){
+	function CreateTextInput(id, clas, value){
 		var Input = document.createElement('input');
 		Input.setAttribute('type', 'text');
 		Input.setAttribute('id', id);
@@ -182,7 +203,7 @@
 		Input.setAttribute('value', value);
 		return Input;
 	}
-	function TextArea(id, clas, value){
+	function CreateTextArea(id, clas, value){
 		var Input = document.createElement('textarea');
 		Input.setAttribute('type', 'text');
 		Input.setAttribute('id', id);
@@ -190,17 +211,37 @@
 		Input.innerHTML = value;
 		return Input;
 	}
-	
+	function CreateOption(index, i, value){
+		var Div = CreateDiv('Option'+index+'-'+i+'ChangeHolder', 'OptionChangeHolder', '');
+		Div.append(CreateTextInput('Option'+index+'-'+i+'Change', 'OptionChange', value));
+		return Div;
+	}
+	function AddOption(index){
+		if(NumberOfOptions[index] >= 5) return;
+		NumberOfOptions[index]++;
+		var Holder = document.getElementById('OptionsField'+index);
+		Holder.append(CreateOption(index, NumberOfOptions[index]-1, ''));
+	}
+	function RemoveOption(index){
+		if(NumberOfOptions[index] <= 2) return;
+		NumberOfOptions[index]--;
+		RemoveElementById('Option'+index+'-'+NumberOfOptions[index]+'ChangeHolder');
+	}
+	function TransformSubjectHolder(index){
+		var Holder = document.getElementById('SubjectField'+index);
+		Holder.innerHTML = '';
+		Holder.append(CreateTextInput('NewSubjectInput'+index, 'NewSubjectInput', AllQuestions[index].Subject));
+	}
 	function TransformQuestionHolder(index){
 		var Holder = document.getElementById('QuestionField'+index);
 		Holder.innerHTML = '';
-		Holder.append(TextInput('NewQuestionInput'+index, 'NewQuestionInput', AllQuestions[index].Question));
+		Holder.append(CreateTextInput('NewQuestionInput'+index, 'NewQuestionInput', AllQuestions[index].Question));
 	}
 	function TransformAnswerHolder(index){
 		var Holder = document.getElementById('AnswerField'+index);
 		Holder.innerHTML = '';
-		if(AllQuestions[index].Type == 'Closed') Holder.append(TextInput('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer+1));
-		if(AllQuestions[index].Type == 'Open') Holder.append(TextArea('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer));
+		if(AllQuestions[index].Type == 'Closed') Holder.append(CreateTextInput('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer+1));
+		if(AllQuestions[index].Type == 'Open') Holder.append(CreateTextArea('NewAnswerInput'+index, 'NewAnswerInput', AllQuestions[index].Answer));
 	}
 	function TransformFunctionsHolder(index){
 		var RemoveButton = document.getElementById('RemoveQuestion'+index);
@@ -211,20 +252,60 @@
 	}
 	function TransformOptionsHolder(index){
 		if(AllQuestions[index].Type == 'Open') return;
-		//var OptionsHolder = 
+		var OptionsHolder = document.getElementById('OptionsField'+index);
+		OptionsHolder.innerHTML = '';
+		OptionsHolder.append(CreateButton('AddOption'+index, 'AppOption', 'AddOption('+index+')', '+'));
+		OptionsHolder.append(CreateButton('RemoveOption'+index, 'RemoveOption', 'RemoveOption('+index+')', '-'));
 		NumberOfOptions[index] = AllQuestions[index].Options.length;
 		
 		for(var i = 0; i < AllQuestions[index].Options.length; i++){
-			var P = CreateP('Option'+index+'-'+i+'ChangeHolder', 'OptionChangeHolder', '');
-			P.append(TextInput('Option'+index+'-'+i, 'Change', 'OptionChange', AllQuestions[index].Options[i]));
-			
+			OptionsHolder.append(CreateOption(index, i, AllQuestions[index].Options[i]));
 		}
 	}
 	function ChangeQuestion(index){
+		TransformSubjectHolder(index);
 		TransformQuestionHolder(index);
 		TransformAnswerHolder(index);
-	//	TransformOptionsHolder(index);
+		TransformOptionsHolder(index);
 		TransformFunctionsHolder(index);
+		TransformFunctionsHolder(index);
+	}
+	function GetAllOptions(index){
+		var Return = [];
+		for(var i = 0; i < NumberOfOptions[index]; i++){
+			Return.push(document.getElementById('Option'+index+'-'+i+'Change').value);
+		}
+		return Return;
+	}
+	function FitsAsClosed(question){
+		var Fits = true;
+		for(var i = 0; i < question.Options.length; i++){
+			if(question.Options[i] == '') Fits = false;
+			for(var j = i+1; j < question.Options.length; j++){
+				Fits = Fits && (question.Options[i] != question.Options[j]);
+			}
+		}
+		console.log(Fits);
+		Fits = Fits && (question.Answer >= 0 && question.Answer < question.Options.length);
+		Fits = Fits && (question.Subject != '');
+		Fits = Fits && (question.Question != '');
+		return Fits;
+	}
+	function SaveClosedQuestion(index){
+		var ThisQuestion = {Subject: '', Question:'', Answer:0, Options:[]};
+		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
+		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
+		ThisQuestion.Answer = ConvertToInt(document.getElementById('NewAnswerInput'+index).value)-1;
+		ThisQuestion.Options = GetAllOptions(index);
+		if(FitsAsClosed(ThisQuestion)){
+			
+		}else{
+			console.log('BLOGAS KLAUSIMAS!!');
+		}
+	}
+	function SaveQuestion(index){
+		if(AllQuestions[index].Type == 'Closed') SaveClosedQuestion(index);
+
 	}
 </script>
 
