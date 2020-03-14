@@ -91,7 +91,7 @@ app.get('/klausimai', function(req, res){
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
-// Lietuviu nd, matematikos nd, istorijos nd
+
 //var klausimas1 = SukurkKlausima("Testas", "Lietuviu", "Kiek man metu?", ["0", "1", "2", "3"], 0);
 //var klausimas2 = SukurkKlausima("Testas", "Matematika", "Kiek 2+2?", ["0", "7", "8", "4"], 3);
 //var klausimas3 = SukurkKlausima("Testas", "Anglu", "What is my name?", ["Augustinas", "Justinas", "John", "Prick"], 2);
@@ -117,12 +117,18 @@ io.sockets.on('connection', function(socket){
 		Vardas = data;
 		socket.emit('faze2', true);
 	});
-
 	socket.on('pridekTesta', function(data){
 		testai.visiTestai.push(data);
 	});
-	
 	socket.on('AskForQuestions', function(){
 		socket.emit('GetAllQuestions', visiKlausimai.klausimai);
-	})
+	});
+	socket.on('EditQuestion', function(data){
+		visiKlausimai.klausimai[data.index] = data.question;
+		socket.emit('QuestionSaved');
+	});
+	socket.on('RemoveQuestion', function(data){
+		visiKlausimai.klausimai[data].Hidden = 1;
+	});
+	
 });
