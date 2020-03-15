@@ -91,6 +91,9 @@ app.get('/klausimai', function(req, res){
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
+app.get('/testai', function(req, res){
+	res.sendFile(__dirname + '/testai.html');
+});
 
 //var klausimas1 = SukurkKlausima("Testas", "Lietuviu", "Kiek man metu?", ["0", "1", "2", "3"], 0);
 //var klausimas2 = SukurkKlausima("Testas", "Matematika", "Kiek 2+2?", ["0", "7", "8", "4"], 3);
@@ -135,6 +138,9 @@ io.sockets.on('connection', function(socket){
 		var Question = data.question;
 		visiKlausimai.klausimai.push(Question);
 		socket.emit('SavedNewQuestion', {newIndex: visiKlausimai.klausimai.length-1, oldIndex:PastIndex});
+	});
+	socket.on('AskForAllTests', function(){
+		socket.emit('GetAllTests', testai.visiTestai);
 	});
 	
 });
