@@ -17,6 +17,7 @@ Dictionary['DeleteTest'] = 'Panaikinti testą';
 Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
 Dictionary['Save'] = 'Išsaugoti';
 Dictionary['ChooseTest'] = 'Pasirinkti testą';
+
 function ConvertToInt(str){
 	var Return = 0;
 	for(var i = 0; i < str.length; i++){ 
@@ -151,4 +152,127 @@ function FitsAsOpen(question){
 	Fits = Fits && (question.Subject != '');
 	Fits = Fits && (question.Question != '');
 	return Fits
+}
+function GetAnswer(answer, index, type){
+	if(answer == '' && type == 'Open') return Dictionary['Unspecified'];
+	if(answer != '' && type == 'Open') return answer;
+	return answer+1;
+}
+function CreateAnswerField(answer, index, type){
+	var Td = CreateTd('AnswerField'+index, 'AnswerField', GetAnswer(answer, index, type));
+	return Td;
+}
+function CreateFunctionsField(index){
+	var Td = CreateTd('FunctionsField'+index, 'FunctionsField', '');
+	Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', Dictionary['ToUpdateQuestion']));
+	Td.append(CreateBr());
+	Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));	
+	return Td;
+}
+
+function CreateClosed(question, index){
+	var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
+	
+	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
+	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+	var OptionsField = CreateOptionsField(question.Options, index);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsField(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+	
+	return Tr;
+}
+function CreateOpen(question, index){
+	var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Closed');
+	
+	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
+	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+	var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsField(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+	
+	return Tr;
+}
+function TransformSubjectHolder(index, question){
+	var Holder = document.getElementById('SubjectField'+index);
+	Holder.innerHTML = '';
+	Holder.append(CreateTextInput('NewSubjectInput'+index, 'NewSubjectInput', question.Subject));
+}
+function TransformQuestionHolder(index, question){
+	var Holder = document.getElementById('QuestionField'+index);
+	Holder.innerHTML = '';
+	Holder.append(CreateTextInput('NewQuestionInput'+index, 'NewQuestionInput', question.Question));
+}
+function TransformAnswerHolder(index, question){
+	var Holder = document.getElementById('AnswerField'+index);
+	Holder.innerHTML = '';
+	if(question.Type == 'Closed') Holder.append(CreateTextInput('NewAnswerInput'+index, 'NewAnswerInput', question.Answer+1));
+	if(question.Type == 'Open') Holder.append(CreateTextArea('NewAnswerInput'+index, 'NewAnswerInput', question.Answer));
+}
+function TransformFunctionsHolder(index){
+	var RemoveButton = document.getElementById('RemoveQuestion'+index);
+	var ChangeButton = document.getElementById('ChangeQuestion'+index);
+	RemoveButton.setAttribute('onClick', 'RemoveQuestion('+index+')');
+	ChangeButton.setAttribute('onClick', 'SaveQuestion('+index+')');
+	ChangeButton.innerHTML = Dictionary['Save'];
+}
+function TransformOptionsHolder(index, question){
+	if(question.Type == 'Open') return;
+	var OptionsHolder = document.getElementById('OptionsField'+index);
+	OptionsHolder.innerHTML = '';
+	OptionsHolder.append(CreateButton('AddOption'+index, 'AppOption', 'AddOption('+index+')', '+'));
+	OptionsHolder.append(CreateButton('RemoveOption'+index, 'RemoveOption', 'RemoveOption('+index+')', '-'));
+	NumberOfOptions[index] = question.Options.length; //// HERE!
+	
+	for(var i = 0; i < question.Options.length; i++){
+		OptionsHolder.append(CreateOption(index, i, question.Options[i]));
+	}
+}
+function UpdateClosedQuestion(question, index){
+	var Tr = document.getElementById('QuestionRow'+index);
+	Tr.innerHTML = '';
+	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
+	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+	var OptionsField = CreateOptionsField(question.Options, index);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsField(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+}
+function UpdateOpenQuestion(question, index){
+	var Tr = document.getElementById('QuestionRow'+index);
+	Tr.innerHTML = '';
+	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
+	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
+	var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsField(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+}
+function GetAllOptions(index){
+	var Return = [];
+	for(var i = 0; i < NumberOfOptions[index]; i++){
+		Return.push(document.getElementById('Option'+index+'-'+i+'Change').value);
+	}
+	return Return;
 }

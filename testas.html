@@ -1,0 +1,188 @@
+<html>
+<style>
+	<style>
+	body{
+		margin: 1%;
+	}
+	.AllTestsDataHolder{
+		width: 90%;
+	}
+	.MainTable{
+		width: 100%;
+	}
+	.MainTable, .MainTable th, td{
+		padding: 0.2%;
+		border: 1px solid black;
+	}
+	.MainTable td, th{
+		width: 20%;
+	}
+	.RemoveQuestion, .ChangeQuestion{
+		width: 100%;
+	}
+</style>
+</style>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/mainFunctions.js"></script>
+<h1>Testai</h1>
+<div class="AllTestsDataHolder" id="AllTestsDataHolder">
+	<div class="TestDataHolder" id="TestDataHolder"></div>
+	<div class="FullQuestions">
+		<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
+		<div class="BothButtons">
+			<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
+			<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
+		</div>
+	</div>
+</div>
+<script>
+	var ThisTest;
+	var NumberOfOptions = [];
+	var IndicesOfNewStillEditing = new Set();
+	var IndexOfThisTest = sessionStorage.getItem('CurrentTest');
+	socket.emit('AskForATest', IndexOfThisTest);
+	socket.on('GetTheTest', function (data){
+		ThisTest = data;
+		DisplayThisTest();
+	});
+	function DisplayThisTest(){
+		//DisplayTestData();
+		DisplayTestQuestions();
+	}
+
+	function DisplayTestQuestions(){
+		var Holder = document.getElementById('TestQuestionsHolder');
+		var MainTable = CreateTable('QuestionsTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
+		for(var i = 0; i < ThisTest.Questions.length; i++){
+			var Klausimas;
+			if(ThisTest.Questions[i].Type == 'Open') Klausimas = CreateOpen(ThisTest.Questions[i], i);
+			if(ThisTest.Questions[i].Type == 'Closed') Klausimas = CreateClosed(ThisTest.Questions[i], i);
+			MainTable.append(Klausimas);
+		}
+		Holder.append(MainTable);
+	}
+	function ChangeQuestion(index){
+		TransformSubjectHolder(index, ThisTest.Questions[index]);
+		TransformQuestionHolder(index, ThisTest.Questions[index]);
+		TransformAnswerHolder(index, ThisTest.Questions[index]);
+		TransformOptionsHolder(index, ThisTest.Questions[index]);
+		TransformFunctionsHolder(index);
+		TransformFunctionsHolder(index, ThisTest.Questions[index]);
+	}
+	function SaveClosedQuestion(index){
+		var ThisQuestion = NewClosedQuestionForm();
+		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
+		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
+		ThisQuestion.Answer = ConvertToInt(document.getElementById('NewAnswerInput'+index).value)-1;
+		ThisQuestion.Options = GetAllOptions(index);
+		if(FitsAsClosed(ThisQuestion)){
+			ThisTest.Questions[index] = ThisQuestion;
+			UpdateClosedQuestion(ThisQuestion, index);
+			DeleteFromNewStillEditing(index);
+		}else{
+			console.log('BLOGAS KLAUSIMAS!!');
+		}
+	}
+	function SaveOpenQuestion(index){
+		var ThisQuestion = NewOpenQuestionForm();
+		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
+		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
+		ThisQuestion.Answer = document.getElementById('NewAnswerInput'+index).value;
+		if(FitsAsOpen(ThisQuestion)){
+			ThisTest.Questions[index] = ThisQuestion;
+			UpdateOpenQuestion(ThisQuestion, index);
+			DeleteFromNewStillEditing(index);
+		}else{
+			console.log('BLOGAS KLAUSIMAS!!');
+		}
+	}
+	function SaveQuestion(index){
+		if(ThisTest.Questions[index].Type == 'Closed') SaveClosedQuestion(index);
+		if(ThisTest.Questions[index].Type == 'Open') SaveOpenQuestion(index);
+	}
+	function RemoveQuestion(index){
+		ThisTest.Questions[index].Hidden = 1;
+		RemoveElementById('QuestionRow'+index);
+	}
+	function CreateNewClosedQuestion(){
+		var index = ThisTest.Questions.length;
+		var NewQuestion = NewClosedQuestionForm();
+		var Holder = document.getElementById('QuestionsTable');
+		ThisTest.Questions.push(NewQuestion);
+		Holder.append(CreateClosed(NewQuestion, index));
+		ChangeQuestion(index);
+		IndicesOfNewStillEditing.add(index);
+	}
+	function CreateNewOpenQuestion(){
+		var index = ThisTest.Questions.length;
+		var NewQuestion = NewOpenQuestionForm();
+		var Holder = document.getElementById('QuestionsTable');
+		ThisTest.Questions.push(NewQuestion);
+		Holder.append(CreateOpen(NewQuestion, index));
+		ChangeQuestion(index);
+		IndicesOfNewStillEditing.add(index);
+	}
+	function DeleteFromNewStillEditing(index){
+		IndicesOfNewStillEditing.delete(index);
+	}
+	function SetQuestions(){
+		var Return = [];
+		for(var i = 0; i < ThisTest.Questions.length; i++){
+			if(IndicesOfNewStillEditing.has(i)) continue;
+			Return.push(ThisTest.Questions[i]);
+		}
+		return Return;
+	}
+	function SaveAndSendEverything(){
+		var Return = {'Name': '', 'Questions': [], 'Time': -1, 'Code': -1, Hidden: 0};
+		Return.Questions = SetQuestions();//// ne taip turi buti!
+		console.log(Return.Questions);
+	}
+
+</script>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

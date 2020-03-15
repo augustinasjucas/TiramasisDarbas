@@ -1,6 +1,5 @@
 <html>
 <style>
-	<style>
 	body{
 		margin: 1%;
 	}
@@ -21,7 +20,7 @@
 		width: 100%;
 	}
 </style>
-</style>
+
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
@@ -32,8 +31,7 @@
 </div>
 <script>
 	var AllTests = [];
-	
-	var socket = io.connect();
+
 	socket.emit('AskForAllTests');
 	socket.on('GetAllTests', function (data){
 		AllTests = data;
@@ -64,49 +62,10 @@
 		socket.emit('DeleteTest', index);
 		RemoveElementById('TestRow'+index);
 	}
+	function SelectTest(index){
+		sessionStorage.setItem('CurrentTest', index);
+		window.location.href = '/testas';
+	}
 </script>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

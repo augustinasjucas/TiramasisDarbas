@@ -105,6 +105,9 @@ app.get('/testai', function(req, res){
 app.get('/mainFunctions.js', function(req, res){
 	res.sendFile(__dirname + '/mainFunctions.js');
 });
+app.get('/testas', function(req, res){
+	res.sendFile(__dirname + '/testas.html');
+});
 
 
 //var klausimas1 = SukurkKlausima("Testas", "Lietuviu", "Kiek man metu?", ["0", "1", "2", "3"], 0);
@@ -157,6 +160,9 @@ io.sockets.on('connection', function(socket){
 	socket.on('DeleteTest', function(data){
 		console.log('atejau ' + data);
 		testai.visiTestai[data].Hidden = 1;
-	})
+	});
+	socket.on('AskForATest', function(data){
+		socket.emit('GetTheTest', testai.visiTestai[data]);
+	});
 	
 });
