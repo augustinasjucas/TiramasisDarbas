@@ -1,0 +1,27 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<h1>Testai</h1>
+<div class="AllTestsDataHolder" id="AllTestsDataHolder">
+	<div class="TestDataHolder" id="TestDataHolder"></div>
+	<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
+</div>
+<script>
+	var AllTests = [];
+	
+	var socket = io.connect();
+	socket.emit('AskForAllTests');
+	socket.on('GetAllTests', function (data){
+		AllTests = data;
+		LoadAllTests();
+	});///
+	
+	function LoadAllTests(){
+		var Holder = document.getElementById('TestQuestionsHolder' )
+		
+		console.log(AllTests);
+	}
+</script>
+
+</html>
