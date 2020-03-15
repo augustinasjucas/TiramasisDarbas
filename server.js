@@ -52,6 +52,14 @@ function TestaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
 	fs.writeFile('testai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
 }
+function SimplifyTests(test){
+	var Return = [];
+	for(var i = 0; i < test.length; i++){
+		var Plus = {'Name': test[i].Name, 'Hidden': test[i].Hidden};
+		Return.push(Plus);
+	}
+	return Return;
+}
 
 function NepavykoIrasyti(err){
 	if(err) console.log('NEPAVYKO IRSYTI + ' + err);
@@ -94,6 +102,10 @@ app.get('/', function(req, res){
 app.get('/testai', function(req, res){
 	res.sendFile(__dirname + '/testai.html');
 });
+app.get('/mainFunctions.js', function(req, res){
+	res.sendFile(__dirname + '/mainFunctions.js');
+});
+
 
 //var klausimas1 = SukurkKlausima("Testas", "Lietuviu", "Kiek man metu?", ["0", "1", "2", "3"], 0);
 //var klausimas2 = SukurkKlausima("Testas", "Matematika", "Kiek 2+2?", ["0", "7", "8", "4"], 3);
@@ -140,7 +152,11 @@ io.sockets.on('connection', function(socket){
 		socket.emit('SavedNewQuestion', {newIndex: visiKlausimai.klausimai.length-1, oldIndex:PastIndex});
 	});
 	socket.on('AskForAllTests', function(){
-		socket.emit('GetAllTests', testai.visiTestai);
+		socket.emit('GetAllTests', SimplifyTests(testai.visiTestai));
 	});
+	socket.on('DeleteTest', function(data){
+		console.log('atejau ' + data);
+		testai.visiTestai[data].Hidden = 1;
+	})
 	
 });

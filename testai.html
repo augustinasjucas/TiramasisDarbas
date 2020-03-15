@@ -1,7 +1,30 @@
 <html>
-
+<style>
+	<style>
+	body{
+		margin: 1%;
+	}
+	.AllTestsDataHolder{
+		width: 90%;
+	}
+	.AllTestsTable{
+		width: 100%;
+	}
+	.AllTestsTable, .AllTestsTable th, td{
+		padding: 0.2%;
+		border: 1px solid black;
+	}
+	.AllTestsTable td, th{
+		width: 20%;
+	}
+	.RemoveQuestion, .ChangeQuestion{
+		width: 100%;
+	}
+</style>
+</style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/mainFunctions.js"></script>
 <h1>Testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
 	<div class="TestDataHolder" id="TestDataHolder"></div>
@@ -16,12 +39,74 @@
 		AllTests = data;
 		LoadAllTests();
 	});///
-	
+
+	function CreateTestRow(test, index){
+		var Tr = CreateTr('TestRow'+index);
+		var TestFunctionsHolder = CreateTd('TestFunctions'+index, 'TestFunctionsHolder', '');
+		var TestNameHolder = CreateTd('TestName'+index, 'TestNameHolder', test.Name);
+		TestFunctionsHolder.append(CreateButton('TestSelection'+index, 'TestSelection', 'SelectTest('+index+')', Dictionary['ChooseTest']));
+		TestFunctionsHolder.append(CreateButton('TestDeletion'+index, 'TestDeletion', 'DeleteTest('+index+')', Dictionary['DeleteTest']));
+		Tr.append(TestNameHolder);
+		Tr.append(TestFunctionsHolder);
+		return Tr;
+	}
 	function LoadAllTests(){
-		var Holder = document.getElementById('TestQuestionsHolder' )
-		
 		console.log(AllTests);
+		var Holder = document.getElementById('TestQuestionsHolder');
+		var AllTestsTable = CreateTable('AllTestsTable', 'AllTestsTable', [Dictionary['TestName'], Dictionary['Functions']]);
+		for(var i = 0; i < AllTests.length; i++){
+			if(AllTests[i].Hidden == 1) continue;
+			AllTestsTable.append(CreateTestRow(AllTests[i], i));
+		}
+		Holder.append(AllTestsTable);
+	}
+	function DeleteTest(index){
+		socket.emit('DeleteTest', index);
+		RemoveElementById('TestRow'+index);
 	}
 </script>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

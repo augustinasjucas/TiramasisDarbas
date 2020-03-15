@@ -22,6 +22,7 @@
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/mainFunctions.js"></script>
 <h1 class="MainName">Klausimu duomenu baze</h1>
 <div class="FullQuestions">
 	<div class="AllQuestionsHolder" id="AllQuestionsHolder"></div>
@@ -30,30 +31,13 @@
 		<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
 	</div>
 </div>
-<script>
-	
-	var Dictionary = {};
-
-	Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
-	Dictionary['EditQuestion'] = 'Redaguoti klausimą';
-	Dictionary['Unspecified'] = 'Nenurodytas';
-	Dictionary['Question'] = 'Klausimas';
-	Dictionary['ChoosingOptions'] = 'Pasirinkimo variantai';
-	Dictionary['Answer'] = 'Atsakymas';
-	Dictionary['Subject'] = 'Mokomasis dalykas'; 
-	Dictionary['Functions'] = 'Funkcijos';
-	Dictionary['ToUpdateQuestion'] = 'Redaguoti klausimą';
-	Dictionary['ToRemoveQuestion'] = 'Panaikinti klausimą';
-	Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
-	Dictionary['Save'] = 'Išsaugoti';
-	
+<script>	
 	var AllQuestions = [];			// Global array wiht all questions, which were downloaded from sever
 	var NumberOfOptions = [];		// Global array with numbers of choices for each closed question
 	var IndicesOfNewQuestions = [];
 	var IsPressed = [];
 	var RealIndex = [];
-	
-	var socket = io.connect();
+
 	socket.emit('AskForQuestions');
 	socket.on('GetAllQuestions', function(data){
 		AllQuestions = data;
@@ -61,89 +45,30 @@
 		LoadAllQuestions();
 	});
 	socket.on('QuestionSaved', function(data){
-	})
-	function ConvertToInt(str){
-		var Return = 0;
-		for(var i = 0; i < str.length; i++){ 
-			if(0 <= str[i]-'0' && str[i]-'0' <= 9) Return = Return*10 + (str[i]-'0');
-			else {
-				Return = -1;
-				break;
-			}
-		}
-		return Return;
-	}
-	function RemoveElementById(id) {
-		var elem = document.getElementById(id);
-		elem.parentNode.removeChild(elem);
-	}
+	});
+	socket.on('SavedNewQuestion', function (data){
+		var NewIndex = data.newIndex;
+		var OldIndex = data.oldIndex;
+		DeleteFromNew(OldIndex);
+		IsPressed[OldIndex] = false;
+		RealIndex[OldIndex] = NewIndex
+	});
 	function GetAnswer(answer, index){
 		if(answer == '' && AllQuestions[index].Type == 'Open') return Dictionary['Unspecified'];
 		if(answer != '' && AllQuestions[index].Type == 'Open') return answer;
 		return answer+1;
 	}
-	function CreateButton(id, clas, onClick, value){
-		var Button = document.createElement('button');
-		Button.setAttribute('id', id);
-		Button.setAttribute('class', clas);
-		Button.setAttribute('onClick', onClick);
-		Button.innerHTML = value;
-		return Button;
-	}
-	function CreateTr(id, clas){
-		var Tr = document.createElement('tr');
-		Tr.setAttribute('id', id);
-		Tr.setAttribute('class', clas);
-		return Tr;
-	}
-	function CreateTd(id, clas, value){
-		var Td = document.createElement('td');
-		Td.setAttribute('id', id);
-		Td.setAttribute('class', clas);
-		Td.innerHTML = value;
-		return Td;
-	}
-	function CreateDiv(id, clas, value){
-		var Div = document.createElement('div');
-		Div.setAttribute('id', id);
-		Div.setAttribute('class', clas);
-		Div.innerHTML = value;
-		return Div;
-	}
-	function CreateBr(id = ''){
-		var Br = document.createElement('br');
-		return Br;
-	}
-	function CreateP(id, clas){
-		var P = document.createElement('p');
-		P.setAttribute('id', id);
-		P.setAttribute('class', clas);
-		return P;
-	}
-	function CreateOptionsField(options, index){
-		var Return = CreateTd('OptionsField'+index, 'OptionField', '');
-		console.log(options);
-		for(var i = 0; i < options.length; i++){
-			var Div = CreateDiv('', '', (i+1) + ') ' + options[i]);
-			if(i != options.length-1) Div.append(CreateBr());
-			Return.append(Div);
-		}
-		return Return;
-	}
 	function CreateAnswerField(answer, index){
 		var Td = CreateTd('AnswerField'+index, 'AnswerField', GetAnswer(answer, index));
 		return Td;
 	}
-	
 	function CreateFunctionsField(index){
 		var Td = CreateTd('FunctionsField'+index, 'FunctionsField', '');
 		Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', Dictionary['ToUpdateQuestion']));
 		Td.append(CreateBr());
-		Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));
-		
+		Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));	
 		return Td;
 	}
-	
 	function CreateClosed(question, index){
 		var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
 		
@@ -178,21 +103,6 @@
 		
 		return Tr;
 	}
-	function CreateTable(id, clas, headers){
-		var Table = document.createElement('table');
-		Table.setAttribute('id', id);
-		Table.setAttribute('class', clas);
-		
-		var tr = CreateTr('TableHeaders', 'TableHeaders');
-		
-		for(var i = 0; i < headers.length; i++){
-			var th = document.createElement('th');
-			th.innerHTML = headers[i];
-			tr.append(th);
-		}
-		Table.append(tr);
-		return Table;
-	}
 	function LoadAllQuestions(){
 		var Holder = document.getElementById('AllQuestionsHolder');
 		var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
@@ -205,38 +115,6 @@
 			RealIndex[i] = i;
 			NumberOfOptions.push(-1);
 		}
-	}
-	function CreateTextInput(id, clas, value){
-		var Input = document.createElement('input');
-		Input.setAttribute('type', 'text');
-		Input.setAttribute('id', id);
-		Input.setAttribute('class', clas);
-		Input.setAttribute('value', value);
-		return Input;
-	}
-	function CreateTextArea(id, clas, value){
-		var Input = document.createElement('textarea');
-		Input.setAttribute('type', 'text');
-		Input.setAttribute('id', id);
-		Input.setAttribute('class', clas);
-		Input.innerHTML = value;
-		return Input;
-	}
-	function CreateOption(index, i, value){
-		var Div = CreateDiv('Option'+index+'-'+i+'ChangeHolder', 'OptionChangeHolder', '');
-		Div.append(CreateTextInput('Option'+index+'-'+i+'Change', 'OptionChange', value));
-		return Div;
-	}
-	function AddOption(index){
-		if(NumberOfOptions[index] >= 5) return;
-		NumberOfOptions[index]++;
-		var Holder = document.getElementById('OptionsField'+index);
-		Holder.append(CreateOption(index, NumberOfOptions[index]-1, ''));
-	}
-	function RemoveOption(index){
-		if(NumberOfOptions[index] <= 2) return;
-		NumberOfOptions[index]--;
-		RemoveElementById('Option'+index+'-'+NumberOfOptions[index]+'ChangeHolder');
 	}
 	function TransformSubjectHolder(index){
 		var Holder = document.getElementById('SubjectField'+index);
@@ -288,25 +166,6 @@
 		}
 		return Return;
 	}
-	function FitsAsClosed(question){
-		var Fits = true;
-		for(var i = 0; i < question.Options.length; i++){
-			if(question.Options[i] == '') Fits = false;
-			for(var j = i+1; j < question.Options.length; j++){
-				Fits = Fits && (question.Options[i] != question.Options[j]);
-			}
-		}
-		Fits = Fits && (question.Answer >= 0 && question.Answer < question.Options.length);
-		Fits = Fits && (question.Subject != '');
-		Fits = Fits && (question.Question != '');
-		return Fits;
-	}
-	function FitsAsOpen(question){
-		var Fits = true;
-		Fits = Fits && (question.Subject != '');
-		Fits = Fits && (question.Question != '');
-		return Fits
-	}
 	function UpdateClosedQuestion(question, index){
 		var Tr = document.getElementById('QuestionRow'+index);
 		Tr.innerHTML = '';
@@ -321,12 +180,6 @@
 		Tr.append(OptionsField);
 		Tr.append(AnswerField);
 		Tr.append(FunctionsField);
-	}
-	function NewClosedQuestionForm(){
-		return {Hidden: 0, Type: 'Closed', Subject: '', Question:'', Answer:0, Options:['', '']};
-	}
-	function NewOpenQuestionForm(){
-		return {Hidden: 0, Type: 'Open', Subject: '', Question:'', Answer:''};
 	}
 	function UpdateOpenQuestion(question, index){
 		var Tr = document.getElementById('QuestionRow'+index);
@@ -355,17 +208,9 @@
 			if(IndicesOfNewQuestions[i] == index){
 				IndicesOfNewQuestions.splice(i, 1);
 				break;
-			} ///// Kas jei per daug pridedame?? 
+			}
 		}
 	}
-
-	socket.on('SavedNewQuestion', function (data){
-		var NewIndex = data.newIndex;
-		var OldIndex = data.oldIndex;
-		DeleteFromNew(OldIndex);
-		IsPressed[OldIndex] = false;
-		RealIndex[OldIndex] = NewIndex
-	});
 	function SaveClosedQuestion(index){
 		var ThisQuestion = NewClosedQuestionForm();
 		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
