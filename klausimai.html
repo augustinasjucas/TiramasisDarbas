@@ -96,7 +96,8 @@
 		ThisQuestion.Answer = ConvertToInt(document.getElementById('NewAnswerInput'+index).value)-1;
 		ThisQuestion.Options = GetAllOptions(index);
 		if(FitsAsClosed(ThisQuestion)){
-			if(QuestionIsNew(index) && !IsPressed[index]){
+			if(QuestionIsNew(index)){
+				if(IsPressed[index]) return;
 				IsPressed[index] = true;
 				AllQuestions[index] = ThisQuestion;
 				socket.emit('AddNewQuestion', {question: ThisQuestion, pastIndex: index});
@@ -116,7 +117,8 @@
 		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
 		ThisQuestion.Answer = document.getElementById('NewAnswerInput'+index).value;
 		if(FitsAsOpen(ThisQuestion)){
-			if(QuestionIsNew(index) && !IsPressed[index]){
+			if(QuestionIsNew(index)){
+				if(IsPressed[index]) return;
 				AllQuestions[index] = ThisQuestion;
 				IsPressed[index] = true;
 				socket.emit('AddNewQuestion', {question: ThisQuestion, pastIndex: index});
@@ -136,7 +138,7 @@
 	}
 	function RemoveQuestion(index){
 		RemoveElementById('QuestionRow'+index);
-		if(!QuestionIsNew(index))socket.emit('RemoveQuestion', RealIndex[index]);
+		if(!QuestionIsNew(index)) socket.emit('RemoveQuestion', RealIndex[index]);
 	}
 	function CreateNewClosedQuestion(){
 		var index = AllQuestions.length;

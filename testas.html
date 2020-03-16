@@ -39,25 +39,33 @@
 <script>
 	var ThisTest;
 	var NumberOfOptions = [];
-	var IndicesOfNewStillEditing = new Set();
+	var RealIndex = [];
+	var IsPressed = [];
+	var NewQuestions = new Set();
 	var IndexOfThisTest = sessionStorage.getItem('CurrentTest');
 	socket.emit('AskForATest', IndexOfThisTest);
 	socket.on('GetTheTest', function (data){
 		ThisTest = data;
 		DisplayThisTest();
 	});
+	socket.on('NewQuestionToTestAdded', function(data){
+		RealIndex[data.pastIndex] = data.newIndex;
+		NewQuestions.delete(data.pastIndex);
+		IsPressed[data.pastIndex] = false;
+	})
 	function DisplayThisTest(){
 		//DisplayTestData();
 		DisplayTestQuestions();
 	}
-
 	function DisplayTestQuestions(){
 		var Holder = document.getElementById('TestQuestionsHolder');
 		var MainTable = CreateTable('QuestionsTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
 		for(var i = 0; i < ThisTest.Questions.length; i++){
+			if(ThisTest.Questions[i].Hidden == 1) continue;
 			var Klausimas;
 			if(ThisTest.Questions[i].Type == 'Open') Klausimas = CreateOpen(ThisTest.Questions[i], i);
 			if(ThisTest.Questions[i].Type == 'Closed') Klausimas = CreateClosed(ThisTest.Questions[i], i);
+			RealIndex[i] = i;
 			MainTable.append(Klausimas);
 		}
 		Holder.append(MainTable);
@@ -77,9 +85,17 @@
 		ThisQuestion.Answer = ConvertToInt(document.getElementById('NewAnswerInput'+index).value)-1;
 		ThisQuestion.Options = GetAllOptions(index);
 		if(FitsAsClosed(ThisQuestion)){
+			if(NewQuestions.has(index)){
+				if(IsPressed[index]) return;
+				IsPressed[index] = true;
+				ThisTest.Questions[index] = ThisQuestion;
+				socket.emit('AddNewQuestionToTest', {question: ThisQuestion, pastIndex: index, testIndex: IndexOfThisTest});
+				UpdateClosedQuestion(ThisQuestion, index);
+				return;
+			}
+			socket.emit('EditQuestionInTest', {'questionIndex': RealIndex[index], 'question': ThisQuestion, 'testIndex': IndexOfThisTest});
 			ThisTest.Questions[index] = ThisQuestion;
 			UpdateClosedQuestion(ThisQuestion, index);
-			DeleteFromNewStillEditing(index);
 		}else{
 			console.log('BLOGAS KLAUSIMAS!!');
 		}
@@ -90,9 +106,17 @@
 		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
 		ThisQuestion.Answer = document.getElementById('NewAnswerInput'+index).value;
 		if(FitsAsOpen(ThisQuestion)){
+			if(NewQuestions.has(index)){
+				if(IsPressed[index]) return;
+				IsPressed[index] = true;
+				ThisTest.Questions[index] = ThisQuestion;
+				socket.emit('AddNewQuestionToTest', {question: ThisQuestion, pastIndex: index, testIndex: IndexOfThisTest});
+				UpdateOpenQuestion(ThisQuestion, index);
+				return;
+			}
+			socket.emit('EditQuestionInTest', {'index': RealIndex[index], 'question': ThisQuestion, 'testIndex': IndexOfThisTest});
 			ThisTest.Questions[index] = ThisQuestion;
 			UpdateOpenQuestion(ThisQuestion, index);
-			DeleteFromNewStillEditing(index);
 		}else{
 			console.log('BLOGAS KLAUSIMAS!!');
 		}
@@ -104,6 +128,7 @@
 	function RemoveQuestion(index){
 		ThisTest.Questions[index].Hidden = 1;
 		RemoveElementById('QuestionRow'+index);
+		if(!NewQuestions.has(index)) socket.emit('DeleteQuestionFromTest', {testIndex: IndexOfThisTest, questionIndex: index});
 	}
 	function CreateNewClosedQuestion(){
 		var index = ThisTest.Questions.length;
@@ -112,7 +137,8 @@
 		ThisTest.Questions.push(NewQuestion);
 		Holder.append(CreateClosed(NewQuestion, index));
 		ChangeQuestion(index);
-		IndicesOfNewStillEditing.add(index);
+		IsPressed[index] = false;
+		NewQuestions.add(index);
 	}
 	function CreateNewOpenQuestion(){
 		var index = ThisTest.Questions.length;
@@ -121,25 +147,10 @@
 		ThisTest.Questions.push(NewQuestion);
 		Holder.append(CreateOpen(NewQuestion, index));
 		ChangeQuestion(index);
-		IndicesOfNewStillEditing.add(index);
+		IsPressed[index] = false;
+		NewQuestions.add(index);
 	}
-	function DeleteFromNewStillEditing(index){
-		IndicesOfNewStillEditing.delete(index);
-	}
-	function SetQuestions(){
-		var Return = [];
-		for(var i = 0; i < ThisTest.Questions.length; i++){
-			if(IndicesOfNewStillEditing.has(i)) continue;
-			Return.push(ThisTest.Questions[i]);
-		}
-		return Return;
-	}
-	function SaveAndSendEverything(){
-		var Return = {'Name': '', 'Questions': [], 'Time': -1, 'Code': -1, Hidden: 0};
-		Return.Questions = SetQuestions();//// ne taip turi buti!
-		console.log(Return.Questions);
-	}
-
+	
 </script>
 
 </html>

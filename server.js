@@ -164,5 +164,15 @@ io.sockets.on('connection', function(socket){
 	socket.on('AskForATest', function(data){
 		socket.emit('GetTheTest', testai.visiTestai[data]);
 	});
+	socket.on('AddNewQuestionToTest', function(data){
+		testai.visiTestai[data.testIndex].Questions.push(data.question);
+		socket.emit('NewQuestionToTestAdded', {'newIndex': testai.visiTestai[data.testIndex].Questions.length-1, 'pastIndex': data.pastIndex});
+	});
+	socket.on('DeleteQuestionFromTest', function(data){
+		testai.visiTestai[data.testIndex].Questions[data.questionIndex].Hidden = 1;
+	});
+	socket.on('EditQuestionInTest', function(data){
+		testai.visiTestai[data.testIndex].Questions[data.questionIndex] = data.question;
+	});
 	
 });
