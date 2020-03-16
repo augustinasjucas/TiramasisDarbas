@@ -20,6 +20,14 @@
 	.RemoveQuestion, .ChangeQuestion{
 		width: 100%;
 	}
+	.TestDataTable{
+		border: 1px solid black;
+		width: 50%;
+	}
+	.TestDataTable td, .TestDataTable tr{
+		padding: 2%;
+		border: 0px;
+	}
 </style>
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -28,6 +36,7 @@
 <h1>Testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
 	<div class="TestDataHolder" id="TestDataHolder"></div>
+	<br />
 	<div class="FullQuestions">
 		<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
 		<div class="BothButtons">
@@ -150,10 +159,67 @@
 		IsPressed[index] = false;
 		NewQuestions.add(index);
 	}
+	function CreateTestDataRow(id, name, value, onClick, buttonValue, needButton, holderId){
+		var Tr = CreateTr('TestDataRow', 'TestDataRow');
+
+		var Name = CreateTd('', 'TestDataNameHolder', name);
+		var Value = CreateTd(holderId, 'TestDataValueHolder', value);
+		var Change = CreateTd('', 'TestDataChangerHolder', '');
+		if(needButton) Change.append(CreateButton(id, 'TestDataChanger ChangeQuestion', onClick, buttonValue));
+		
+		Tr.append(Name);
+		Tr.append(Value);
+		Tr.append(Change);
+		
+		return Tr;
+	}
 	function DisplayTestData(){
 		var Holder = document.getElementById('TestDataHolder');
-		
+		var Table = document.createElement('table'); Table.setAttribute('class', 'TestDataTable');
+
+		Table.append(CreateTestDataRow('TestName', Dictionary['TestName'], ThisTest.Name, 'ChangeName()', Dictionary['ChangeName'], 1, 'NameTd'));
+		Table.append(CreateTestDataRow('TestTime', Dictionary['TestTime'], ThisTest.Time, 'ChangeTime()', Dictionary['ChangeTime'], 1, 'TimeTd'));
+		Table.append(CreateTestDataRow('TestCode', Dictionary['TestCode'], ThisTest.Code, '', '', 0, 'CodeTd'));
+		Table.append(CreateTestDataRow('TestDeletion', Dictionary['DeletionTest'], '', 'DeleteTest()', Dictionary['DeleteTest'], 1, 'DeletionTd'));
+
+		Holder.append(Table);
 	}
+	function ChangeName(){
+		var Holder = document.getElementById('NameTd');
+		var Button = document.getElementById('TestName');
+		Holder.innerHTML = '';
+		Button.innerHTML = Dictionary['Save'];
+		Button.setAttribute('onClick', 'SaveName()');
+		Holder.append(CreateTextInput('NameInput', 'NewDataInput', ThisTest.Name));
+	}
+	function ChangeTime(){
+		var Holder = document.getElementById('TimeTd');
+		var Button = document.getElementById('TestTime');
+		Holder.innerHTML = '';
+		Button.innerHTML = Dictionary['Save'];
+		Button.setAttribute('onClick', 'SaveTime()');
+		Holder.append(CreateTextInput('TimeInput', 'NewDataInput', ThisTest.Time));
+	}
+	function DeleteTest(){
+
+	}
+	function SaveTime(){
+		socket.emit('ChangeTime', {index: IndexOfThisTest, time: document.getElementById('TimeInput').value});
+		var Holder = document.getElementById('TimeTd');
+		var Button = document.getElementById('TestTime');
+		Holder.innerHTML = ThisTest.Time + '';
+		Button.innerHTML = Dictionary['ChangeTime'];
+		Button.setAttribute('onClick', 'ChangeTime()');
+	}
+	function SaveName(){
+		//socket.emit('ChangeName', {index: IndexOfThisTest, name: document.getElementById('NameInput').value});
+		var Holder = document.getElementById('NameTd');
+		var Button = document.getElementById('TestName');
+		Holder.innerHTML = ThisTest.Name + ''; 
+		Button.innerHTML = Dictionary['ChangeName'];
+		Button.setAttribute('onClick', 'ChangeName()');
+	}
+
 </script>
 
 </html>

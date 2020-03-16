@@ -17,6 +17,13 @@ Dictionary['DeleteTest'] = 'Panaikinti testą';
 Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
 Dictionary['Save'] = 'Išsaugoti';
 Dictionary['ChooseTest'] = 'Pasirinkti testą';
+Dictionary['ChangeName'] = 'Pakeisti pavadinimą';
+Dictionary['TestName'] = 'Testo pavadinimas:';
+Dictionary['TestCode'] = 'Testo kodas:';
+Dictionary['TestTime'] = 'Testo laikas:';
+Dictionary['ChangeTime'] = 'Pakeisti laiką';
+Dictionary['DeletionTest'] = 'Testo panakinimas:';
+Dictionary['DeleteTest'] = 'Panaikinti testą';
 
 function ConvertToInt(str){
 	var Return = 0;
