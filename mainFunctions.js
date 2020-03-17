@@ -24,6 +24,9 @@ Dictionary['TestTime'] = 'Testo laikas:';
 Dictionary['ChangeTime'] = 'Pakeisti laiką';
 Dictionary['DeletionTest'] = 'Testo panakinimas:';
 Dictionary['DeleteTest'] = 'Panaikinti testą';
+Dictionary['ToAddQuestion'] = 'Pridėti klausimą';
+Dictionary['ShowAllQuestions'] = 'Rodyti visus klausimus ↓';
+Dictionary['HideAllQuestions'] = 'Slėpti visus klausimus ↑';
 
 function ConvertToInt(str){
 	var Return = 0;
@@ -210,6 +213,45 @@ function CreateOpen(question, index){
 	Tr.append(FunctionsField);
 	
 	return Tr;
+}
+function CreateClosedForDatabase(question, index){
+	var Tr = CreateTr('DatabaseQuestionRow'+index, 'DatabaseQuestionRow Open');
+	
+	var SubjectField = CreateTd('', 'DatabaseSubjectField', question.Subject);
+	var QuestionField = CreateTd('', 'DatabaseQuestionField', question.Question);
+	var OptionsField = CreateOptionsField(question.Options, index);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsFieldForDatabase(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+	
+	return Tr;
+}
+function CreateOpenForDatabase(question, index){
+	var Tr = CreateTr('DatabaseQuestionRow'+index, 'DatabaseQuestionRow Closed');
+	
+	var SubjectField = CreateTd('', 'DatabaseSubjectField', question.Subject);
+	var QuestionField = CreateTd('', 'DatabaseQuestionField', question.Question);
+	var OptionsField = CreateTd('', 'DatabaseOptionsField', Dictionary['QuestionIsOpen']);
+	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
+	var FunctionsField = CreateFunctionsFieldForDatabase(index);
+	
+	Tr.append(SubjectField);
+	Tr.append(QuestionField);
+	Tr.append(OptionsField);
+	Tr.append(AnswerField);
+	Tr.append(FunctionsField);
+	
+	return Tr;
+}
+function CreateFunctionsFieldForDatabase(index){
+	var Td = CreateTd('', '', '');
+	Td.append(CreateButton('', 'DatabaseAddQuestion', 'AddDatabaseQuestion('+index+')', Dictionary['ToAddQuestion']));
+	return Td;
 }
 function TransformSubjectHolder(index, question){
 	var Holder = document.getElementById('SubjectField'+index);

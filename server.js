@@ -158,7 +158,6 @@ io.sockets.on('connection', function(socket){
 		socket.emit('GetAllTests', SimplifyTests(testai.visiTestai));
 	});
 	socket.on('DeleteTest', function(data){
-		console.log('atejau ' + data);
 		testai.visiTestai[data].Hidden = 1;
 	});
 	socket.on('AskForATest', function(data){
@@ -173,6 +172,12 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('EditQuestionInTest', function(data){
 		testai.visiTestai[data.testIndex].Questions[data.questionIndex] = data.question;
+	});
+	socket.on('ChangeTime', function(data){
+		testai.visiTestai[data.index].Time = data.time;
+	});
+	socket.on('ChangeName', function(data){
+		testai.visiTestai[data.index].Name = data.name;
 	});
 	
 });

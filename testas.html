@@ -7,6 +7,9 @@
 	.AllTestsDataHolder{
 		width: 90%;
 	}
+	.AllTestsDataHolder td{
+		width: 33.33333%;
+	}
 	.MainTable{
 		width: 100%;
 	}
@@ -28,6 +31,13 @@
 		padding: 2%;
 		border: 0px;
 	}
+	.ShowAllQuestionsMark{
+		text-decoration: underline;
+		 cursor: pointer;
+	}
+	.DatabaseAddQuestion{
+		width: 100%
+	}
 </style>
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -43,6 +53,10 @@
 			<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
 			<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
 		</div>
+		<div id="FullDatabaseQuestionsHolder">
+			<div id="Link"><a id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></a></div>
+			<div id="DatabaseQuestionsHolder"></div>
+		</div>
 	</div>
 </div>
 <script>
@@ -50,7 +64,9 @@
 	var NumberOfOptions = [];
 	var RealIndex = [];
 	var IsPressed = [];
+	var AllQuestions = [];
 	var NewQuestions = new Set();
+	var AllQuestionsAreShown = false;
 	var IndexOfThisTest = sessionStorage.getItem('CurrentTest');
 	socket.emit('AskForATest', IndexOfThisTest);
 	socket.on('GetTheTest', function (data){
@@ -201,10 +217,14 @@
 		Holder.append(CreateTextInput('TimeInput', 'NewDataInput', ThisTest.Time));
 	}
 	function DeleteTest(){
-
+		socket.emit('DeleteTest', IndexOfThisTest);
+		window.location.href = '/testai';
 	}
 	function SaveTime(){
-		socket.emit('ChangeTime', {index: IndexOfThisTest, time: document.getElementById('TimeInput').value});
+		var Value = ConvertToInt(document.getElementById('TimeInput').value);
+		if(Value == -1) return;
+		socket.emit('ChangeTime', {index: IndexOfThisTest, time: Value});
+		ThisTest.Time = Value;
 		var Holder = document.getElementById('TimeTd');
 		var Button = document.getElementById('TestTime');
 		Holder.innerHTML = ThisTest.Time + '';
@@ -212,14 +232,59 @@
 		Button.setAttribute('onClick', 'ChangeTime()');
 	}
 	function SaveName(){
-		//socket.emit('ChangeName', {index: IndexOfThisTest, name: document.getElementById('NameInput').value});
+		var Value = document.getElementById('NameInput').value;
+		ThisTest.Name = Value;
+		socket.emit('ChangeName', {index: IndexOfThisTest, name: Value});
 		var Holder = document.getElementById('NameTd');
 		var Button = document.getElementById('TestName');
 		Holder.innerHTML = ThisTest.Name + ''; 
 		Button.innerHTML = Dictionary['ChangeName'];
 		Button.setAttribute('onClick', 'ChangeName()');
 	}
-
+	socket.on('GetAllQuestions', function(data){
+		AllQuestions = data;
+		DisplayAllQuestions();
+	});
+	function GetAllQuestions(){
+		if(AllQuestions){
+			socket.emit('AskForQuestions');
+		}else{
+			DisplayAllQuestions();
+		}
+	}
+	
+	function DisplayAllQuestions(){
+		var Holder = document.getElementById('DatabaseQuestionsHolder');
+		if(AllQuestionsAreShown){
+			document.getElementById('ShowAllQuestionsMark').innerHTML = Dictionary['ShowAllQuestions'];
+			Holder.innerHTML = '';
+			AllQuestionsAreShown = false;
+		}else{
+			document.getElementById('ShowAllQuestionsMark').innerHTML = Dictionary['HideAllQuestions'];
+			var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
+			Holder.append(MainTable);
+			for(var i = 0; i < AllQuestions.length; i++){
+				if(AllQuestions[i].Hidden == 1) continue;
+				if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateClosedForDatabase(AllQuestions[i], i));
+				if(AllQuestions[i].Type == 'Open') MainTable.append(CreateOpenForDatabase(AllQuestions[i], i));
+				RealIndex[i] = i;
+				NumberOfOptions.push(-1);
+			}
+			AllQuestionsAreShown = true;
+		}
+	}
+	function AddDatabaseQuestion(index){
+		var MainTable = document.getElementById('QuestionsTable');
+		var Klausimas;
+		var IndexHere = ThisTest.Questions.length;
+		if(AllQuestions[index].Type == 'Open') Klausimas = CreateOpen(AllQuestions[index], IndexHere);
+		if(AllQuestions[index].Type == 'Closed') Klausimas = CreateClosed(AllQuestions[index], IndexHere);
+		ThisTest.Questions.push(AllQuestions[index]);
+		RealIndex[IndexHere] = IndexHere;
+		MainTable.append(Klausimas);
+		socket.emit('AddNewQuestionToTest', {testIndex: IndexOfThisTest, question: AllQuestions[index], pastIndex: IndexHere});
+	}
+	
 </script>
 
 </html>
