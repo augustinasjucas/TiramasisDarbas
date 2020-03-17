@@ -153,7 +153,7 @@
 	function RemoveQuestion(index){
 		ThisTest.Questions[index].Hidden = 1;
 		RemoveElementById('QuestionRow'+index);
-		if(!NewQuestions.has(index)) socket.emit('DeleteQuestionFromTest', {testIndex: IndexOfThisTest, questionIndex: index});
+		if(!NewQuestions.has(index)) socket.emit('DeleteQuestionFromTest', {testIndex: IndexOfThisTest, questionIndex: RealIndex[index]});
 	}
 	function CreateNewClosedQuestion(){
 		var index = ThisTest.Questions.length;
@@ -267,7 +267,6 @@
 				if(AllQuestions[i].Hidden == 1) continue;
 				if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateClosedForDatabase(AllQuestions[i], i));
 				if(AllQuestions[i].Type == 'Open') MainTable.append(CreateOpenForDatabase(AllQuestions[i], i));
-				RealIndex[i] = i;
 				NumberOfOptions.push(-1);
 			}
 			AllQuestionsAreShown = true;
