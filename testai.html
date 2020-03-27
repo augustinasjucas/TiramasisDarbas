@@ -26,12 +26,14 @@
 <script src="/mainFunctions.js"></script>
 <h1>Testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
-	<div class="TestDataHolder" id="TestDataHolder"></div>
 	<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
+	<div class="TestDataHolder" id="TestDataHolder">
+		<button id="AddNewTest" class="NewTest" onClick="AddNewTest()"></button>
+	</div>
 </div>
 <script>
 	var AllTests = [];
-
+	var RealIndex = [];
 	socket.emit('AskForAllTests');
 	socket.on('GetAllTests', function (data){
 		AllTests = data;
@@ -49,11 +51,12 @@
 		return Tr;
 	}
 	function LoadAllTests(){
-		console.log(AllTests);
-		var Holder = document.getElementById('TestQuestionsHolder');
+
+		var Holder = document.getElementById('TestQuestionsHolder'); Holder.innerHTML = '';
 		var AllTestsTable = CreateTable('AllTestsTable', 'AllTestsTable', [Dictionary['TestName'], Dictionary['Functions']]);
 		for(var i = 0; i < AllTests.length; i++){
 			if(AllTests[i].Hidden == 1) continue;
+			RealIndex[i] = i;
 			AllTestsTable.append(CreateTestRow(AllTests[i], i));
 		}
 		Holder.append(AllTestsTable);
@@ -66,6 +69,14 @@
 		sessionStorage.setItem('CurrentTest', index);
 		window.location.href = '/testas';
 	}
+	function AddNewTest(){
+		socket.emit('AddNewTest');
+	}
+	socket.on('GetNewTest', function(data){
+		RealIndex[AllTests.length] = data.newIndex;
+		AllTests.push({Hidden: 0, Name: data.Name});
+		SelectTest(AllTests.length-1);
+	});
 </script>
 
 </html>

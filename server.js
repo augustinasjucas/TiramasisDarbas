@@ -179,5 +179,9 @@ io.sockets.on('connection', function(socket){
 	socket.on('ChangeName', function(data){
 		testai.visiTestai[data.index].Name = data.name;
 	});
+	socket.on('AddNewTest', function(data){
+		testai.visiTestai.push({Name: '', Questions: [],  Time:250, Code:-2});
+		socket.emit('GetNewTest', {Name: '', newIndex: testai.visiTestai.length});
+	});
 	
 });
