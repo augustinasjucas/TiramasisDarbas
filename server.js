@@ -44,6 +44,12 @@ function SukurkTesta(numeriai){
 	return testas;
 }
 
+function findTestByNum(num){
+	for(var i = 0; i < testai.visiTestai.length; i++){
+		if(testai.visiTestai[i].Code == num) return testai.visiTestai[i];
+	}
+	return [];
+}
 function KlausimaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
 	fs.writeFile('visiKlausimai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
@@ -52,6 +58,11 @@ function TestaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
 	fs.writeFile('testai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
 }
+function AtsakymaImeskIFaila(ka){
+	var ls = JSON.stringify(ka);
+	fs.writeFile('answers.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+}
+
 function SimplifyTests(test){
 	var Return = [];
 	for(var i = 0; i < test.length; i++){
@@ -67,10 +78,21 @@ function NepavykoIrasyti(err){
 		console.log("Iraseme i faila");
 	}
 }
+function GetCode(){
+
+	while(true){
+		var code = Math.round((Math.random()*10000)) ; var is = 1;
+		for(var i = 0; i < testai.visiTestai.length; i++){
+			if(testai.visiTestai[i].Code == code) is = 0;
+		}
+		if(is == 1) return code;
+	}
+}
 
 function IrasinekKlausimusIrTestus(){
 	KlausimaImeskIFaila(visiKlausimai);
 	TestaImeskIFaila(testai);
+	AtsakymaImeskIFaila(answers);
 
 }
 setInterval(IrasinekKlausimusIrTestus, 30000);
@@ -82,7 +104,7 @@ var io = require('socket.io').listen(server);
 var fs = require('fs');
 var visiKlausimai = require('./visiKlausimai.json');
 var testai = require('./testai.json');
-
+var answers = require('./answers.json');
 users = [];
 connections = [];
 names = [];
@@ -107,6 +129,9 @@ app.get('/mainFunctions.js', function(req, res){
 });
 app.get('/testas', function(req, res){
 	res.sendFile(__dirname + '/testas.html');
+});
+app.get('/testavimas', function(req, res){
+	res.sendFile(__dirname + '/testavimas.html');
 });
 
 
@@ -180,8 +205,15 @@ io.sockets.on('connection', function(socket){
 		testai.visiTestai[data.index].Name = data.name;
 	});
 	socket.on('AddNewTest', function(data){
-		testai.visiTestai.push({Name: '', Questions: [],  Time:250, Code:-2});
+		testai.visiTestai.push({Name: '', Questions: [],  Time:250, Code:GetCode()});
 		socket.emit('GetNewTest', {Name: '', newIndex: testai.visiTestai.length});
 	});
-	
+	socket.on('GiveTest', function(data){
+		var ret = findTestByNum(data.testId);
+		socket.emit('GetStudentATest', ret);
+	});
+	socket.on('NewAnswers', function(data){
+		answers.answers.push(data);
+		socket.emit('AnswerReceived');
+	});
 });

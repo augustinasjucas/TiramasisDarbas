@@ -197,7 +197,7 @@
 		Table.append(CreateTestDataRow('TestTime', Dictionary['TestTime'], ThisTest.Time, 'ChangeTime()', Dictionary['ChangeTime'], 1, 'TimeTd'));
 		Table.append(CreateTestDataRow('TestCode', Dictionary['TestCode'], ThisTest.Code, '', '', 0, 'CodeTd'));
 		Table.append(CreateTestDataRow('TestDeletion', Dictionary['DeletionTest'], '', 'DeleteTest()', Dictionary['DeleteTest'], 1, 'DeletionTd'));
-
+		Table.append(CreateTestDataRow('SaveTest', Dictionary['SaveAndGetBack'], '', 'SaveAndBack()', Dictionary['Save'], 1, ''));
 		Holder.append(Table);
 	}
 	function ChangeName(){
@@ -283,50 +283,21 @@
 		MainTable.append(Klausimas);
 		socket.emit('AddNewQuestionToTest', {testIndex: IndexOfThisTest, question: AllQuestions[index], pastIndex: IndexHere});
 	}
+	function DisplayError(data){
+		alert(data);
+	}
+	function FitsData(){
+		if(ThisTest.Name == '') return false;
+		return true;
+	}
+	function SaveAndBack(){
+		if(!FitsData()){
+			DisplayError("Informacija neteisinga!");
+			return;
+		}
+		window.location.href = 'testai';
+	}
 	
 </script>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -4,6 +4,7 @@ var Dictionary = {};
 
 Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
 Dictionary['EditQuestion'] = 'Redaguoti klausimą';
+Dictionary['Send'] = 'Siųsti';
 Dictionary['Unspecified'] = 'Nenurodytas';
 Dictionary['Question'] = 'Klausimas';
 Dictionary['ChoosingOptions'] = 'Pasirinkimo variantai';
@@ -27,6 +28,7 @@ Dictionary['DeleteTest'] = 'Panaikinti testą';
 Dictionary['ToAddQuestion'] = 'Pridėti klausimą';
 Dictionary['ShowAllQuestions'] = 'Rodyti visus klausimus ↓';
 Dictionary['HideAllQuestions'] = 'Slėpti visus klausimus ↑';
+Dictionary['SaveAndGetBack'] = 'Išsaugoti ir grįžti atgal';
 
 function ConvertToInt(str){
 	var Return = 0;
@@ -324,4 +326,7 @@ function GetAllOptions(index){
 		Return.push(document.getElementById('Option'+index+'-'+i+'Change').value);
 	}
 	return Return;
+}
+function GetQuestionChoiceButton(index){
+	return CreateButton("QuestionChoiceButton"+index, "QuestionChoiceButton", "ChooseQuestion("+index+")", (index+1) + "");
 }
