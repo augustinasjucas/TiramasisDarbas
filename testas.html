@@ -196,9 +196,14 @@
 		Table.append(CreateTestDataRow('TestName', Dictionary['TestName'], ThisTest.Name, 'ChangeName()', Dictionary['ChangeName'], 1, 'NameTd'));
 		Table.append(CreateTestDataRow('TestTime', Dictionary['TestTime'], ThisTest.Time, 'ChangeTime()', Dictionary['ChangeTime'], 1, 'TimeTd'));
 		Table.append(CreateTestDataRow('TestCode', Dictionary['TestCode'], ThisTest.Code, '', '', 0, 'CodeTd'));
+		Table.append(CreateTestDataRow('ViewAnswers', Dictionary['ViewAnswers'], '', 'ViewAnswers()', Dictionary['ViewAnswers'], 1, 'iewAnswersTd'));
 		Table.append(CreateTestDataRow('TestDeletion', Dictionary['DeletionTest'], '', 'DeleteTest()', Dictionary['DeleteTest'], 1, 'DeletionTd'));
 		Table.append(CreateTestDataRow('SaveTest', Dictionary['SaveAndGetBack'], '', 'SaveAndBack()', Dictionary['Save'], 1, ''));
 		Holder.append(Table);
+	}
+	function ViewAnswers(){
+		window.sessionStorage.setItem('testData', ThisTest.Code);
+		window.location.href = 'answers';
 	}
 	function ChangeName(){
 		var Holder = document.getElementById('NameTd');
@@ -218,7 +223,7 @@
 	}
 	function DeleteTest(){
 		socket.emit('DeleteTest', IndexOfThisTest);
-		window.location.href = '/testai';
+		window.location.href = 'testai';
 	}
 	function SaveTime(){
 		var Value = ConvertToInt(document.getElementById('TimeInput').value);

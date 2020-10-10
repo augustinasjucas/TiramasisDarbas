@@ -88,7 +88,27 @@ function GetCode(){
 		if(is == 1) return code;
 	}
 }
+function FindAnswers(code){
+	var ret = [];
+	for(var i = 0; i < answers.answers.length; i++){
+		var psh = {answer: -1, index: -1};
+		if(answers.answers[i].Code != code) continue;
+		psh.answer = answers.answers[i];
+		ret.push(psh);
+	}
+	return ret;
 
+}
+function ProcessAnswer(answer){
+	var correct = 0; var wrong = 0;
+	for(var i = 0; i < answer.Answers.length; i++){
+		if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer) correct++;
+		else wrong++;
+	}
+	answer.Percentage = (correct *1.0) / (correct+wrong + 0.0);
+	return answer;
+
+}
 function IrasinekKlausimusIrTestus(){
 	KlausimaImeskIFaila(visiKlausimai);
 	TestaImeskIFaila(testai);
@@ -132,6 +152,12 @@ app.get('/testas', function(req, res){
 });
 app.get('/testavimas', function(req, res){
 	res.sendFile(__dirname + '/testavimas.html');
+});
+app.get('/answers', function(req, res){
+	res.sendFile(__dirname + '/answers.html');
+});
+app.get('/checkAnswer', function(req, res){
+	res.sendFile(__dirname + '/checkAnswer.html');
 });
 
 
@@ -213,7 +239,13 @@ io.sockets.on('connection', function(socket){
 		socket.emit('GetStudentATest', ret);
 	});
 	socket.on('NewAnswers', function(data){
-		answers.answers.push(data);
+		answers.answers.push(ProcessAnswer(data));
 		socket.emit('AnswerReceived');
+	});
+	socket.on('GetAnswersByCode', function(data){
+		socket.emit('SendAnswersByCode', FindAnswers(data));
+	});
+	socket.on('CheckValidity', function(data){
+		socket.emit('GetValidity', 1);
 	});
 });

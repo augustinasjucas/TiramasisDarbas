@@ -2,6 +2,14 @@ var socket = io.connect();
 
 var Dictionary = {};
 
+Dictionary['NotOverviewed'] = 'Neperžiūrėta';
+Dictionary['CorrectAnswers'] = 'Tesingų atsakymų';
+Dictionary['Name'] = 'Vardas';
+Dictionary['Result'] = 'Rezultatas';
+Dictionary['Status'] = 'Statusas';
+Dictionary['Options'] = 'Pasirinkimai';
+Dictionary['Select'] = 'Pasirinkti';
+Dictionary['ViewAnswers'] = 'Žiūrėti sprendimus';
 Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
 Dictionary['EditQuestion'] = 'Redaguoti klausimą';
 Dictionary['Send'] = 'Siųsti';
