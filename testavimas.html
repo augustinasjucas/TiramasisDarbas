@@ -1,0 +1,154 @@
+<html>
+    <head>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/mainFunctions.js"></script>
+    </head>
+    
+    <body>
+        <div id="PrimaryInputHolder">
+            <input type="text" id="TestId" class="" placeholder="Kodas" ></input>
+            <input type="text" id="TakerName" class="" placeholder="Vardas" ></input>
+            <button value="Pasirinkti" id="SendId" class="SendButton" onclick="SendId()">Siųsti</button>
+        </div>
+        <div id="TestDataHolder" class="TestDataHolder">
+            <div id="MetaInfoHolder" class="MetaInfoHolder"></div>
+            <div id="SelectorHolder" class="SelectorHolder"></div>
+            <div id="QuestionHolder" class="QuestionHolder"></div>
+        </div>
+    </body>
+    <script>
+        var TakerName = "";
+        var Answers = [];
+        var ThisTest;
+        var CurrentQuestion = -1;
+        function CheckVal(a, b){
+            if(b == '') return -1;
+            var ret = 0;
+            for(var i = 0; i < a.length; i++){
+                var x = a[i];
+                if('0' <= x && x <= '9') {
+                    ret = ret*10 + (x-'0');
+                }else {
+                    ret = -1;
+                    break;
+                }
+            }
+            return ret;
+        }
+        function DisplayError(x){
+            alert(x);
+        }
+        function CreateRadio(id, clas, nam, val, chk){
+            var Holder = CreateDiv('', '', '');
+            var Input = document.createElement('input');
+            Input.setAttribute('type', 'radio');
+            Input.setAttribute('value', val);
+            Input.setAttribute('name', nam);
+            Input.setAttribute('id', id);
+            if(chk) Input.setAttribute('checked', chk);
+            var Label = document.createElement('label');
+            Label.setAttribute('for', val);
+            Label.innerHTML = val;
+
+            Holder.append(Input);
+            Holder.append(Label);
+            return Holder;
+        }
+        function BulletPoints(a){
+            var Holder = CreateDiv('', '', '');
+            for(var i = 0; i < a.length; i++){
+                var Radio = CreateRadio("Option-"+i , "", "nam", a[i], (Answers[CurrentQuestion] == i));
+                Holder.append(Radio);
+            }
+            return Holder;
+        }
+        function QuestionForm(q){
+            if(q.Type == "Open"){
+                return CreateTextArea("AnswerBox", "AnswerBox", (Answers[CurrentQuestion] == -1 ? "" : Answers[CurrentQuestion]));
+            }else if(q.Type == "Closed"){
+                return BulletPoints(q.Options);
+            }
+            return "ERROR";
+        }
+        function SaveCurrentQuestion(){
+            if(CurrentQuestion == -1) return ;
+            if(ThisTest.Questions[CurrentQuestion].Type == "Closed"){
+                for(var i = 0; i < ThisTest.Questions[CurrentQuestion].Options.length; i++){
+                    if(document.getElementById("Option-"+i).checked){
+                        Answers[CurrentQuestion] = i;
+                    }
+                }
+            }else if(ThisTest.Questions[CurrentQuestion].Type == "Open"){
+                Answers[CurrentQuestion] = document.getElementById("AnswerBox").value;
+            }else{
+            }
+
+        }
+        function ChooseQuestion(ind){
+            SaveCurrentQuestion();
+            CurrentQuestion = ind;
+            var QuestionHolder = document.getElementById("QuestionHolder");
+            QuestionHolder.innerHTML = '';
+            QuestionHolder.append(CreateTable("QuestionTable", "QuestionTable", [ThisTest.Questions[ind].Question]));
+            var Table = document.getElementById("QuestionTable");
+            Table.append(CreateTr("QuestionTableQuestion", "QuestionTableQuestion"));
+            var QuestionH = document.getElementById("QuestionTableQuestion");
+            QuestionH.append(QuestionForm(ThisTest.Questions[ind]));
+        }
+
+
+        function DisplayThisTest(){
+            var SelectorHolder = document.getElementById("SelectorHolder");
+            var MetaInfoHolder = document.getElementById("MetaInfoHolder");
+            MetaInfoHolder.append(CreateButton("send", "send", "SendAnswers()", Dictionary['Send']));
+            for(var i = 0; i < ThisTest.Questions.length; i++){
+                Answers[i] = -1;
+                SelectorHolder.append(GetQuestionChoiceButton(i));
+            }
+
+        }
+        function SendId(){
+            var Button = document.getElementById("SendId");
+            var Input = document.getElementById("TestId");
+            var NameIn = document.getElementById("TakerName");
+            var ButtonValue = CheckVal(Input.value, NameIn);
+            if(ButtonValue == -1){
+                DisplayError("Neteisingas kodas");
+            }else socket.emit('GiveTest', {testId: ButtonValue});
+
+        }
+        socket.on('GetStudentATest', function (data){
+            if(data.length == 0){
+                DisplayError("Toks kodas neegzistuoja");
+            }else{
+                TakerName = document.getElementById("TakerName").value;
+                RemoveElementById("PrimaryInputHolder");
+                ThisTest = data;
+                DisplayThisTest();
+            }
+        });
+        function GetData(){ // returns all data of this test - answers and choices
+            SaveCurrentQuestion();
+            var ret = {Code: ThisTest.Code, Answers: [], Percentage: 0, Status: "NotChecked", Name: TakerName}; 
+            for(var i = 0; i < ThisTest.Questions.length; i++){
+                var thisQuestion = {Question: "", Type: "", CorAnswer: "", ChoAnswer: ""};
+                thisQuestion.Question = ThisTest.Questions[i].Question;
+                thisQuestion.Type = ThisTest.Questions[i].Type;
+                thisQuestion.CorAnswer = (ThisTest.Questions[i].Type == "Open" ? ThisTest.Questions[i].Answer : ThisTest.Questions[i].Options[ThisTest.Questions[i].Answer]);
+                thisQuestion.ChoAnswer = (ThisTest.Questions[i].Type == "Open" ? Answers[i] : (Answers[i] == -1 ? -1 : ThisTest.Questions[i].Options[Answers[i]]));
+                ret.Answers.push(thisQuestion);
+            }
+            return ret;
+        }
+        function SendAnswers(){
+            socket.emit('NewAnswers', GetData());
+        }
+        socket.on('AnswerReceived', function(){
+            alert("sent");
+            window.location.replace("/");
+        });
+    </script>
+    
+
+</html>

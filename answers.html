@@ -1,0 +1,70 @@
+<html>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/mainFunctions.js"></script>
+<h1>Atsakymai</h1>
+<div id="AllAnswersHolder"></div>
+<style>
+.MainTable{
+	width: 70%;
+}
+.MainTable, .MainTable th, td{
+	padding: 0.2%;
+	border: 1px solid black;
+}
+.MainTable td, th{
+	width: 20%;
+}
+
+</style>
+<script>
+	var TestCode = sessionStorage.getItem('testData');
+	if(TestCode == null) window.location.href = '/';
+	var UserName = sessionStorage.getItem("Username");
+	var Password = sessionStorage.getItem("Password");
+	socket.emit('CheckValidity', {username: UserName, password: Password, index: sessionStorage.getItem("AnswerToCheck")});
+	var valid = 0;
+	socket.on('GetValidity', function(data){
+		if(data == 1) valid = 1;
+		else {
+			window.location.href = '/';
+		}
+	});
+
+	var AllAnswers;
+	socket.emit('GetAnswersByCode', TestCode);
+	socket.on('SendAnswersByCode', function(data){
+		AllAnswers = data;
+		console.log('got ir');
+		ShowAllAnswers();
+	});
+	function ConvertState(val){
+		if(val == "NotChecked") return Dictionary['NotOverviewed'];
+		return "<div>Nežinau</div>";
+	}
+	function ChooseAnswer(ind){
+		sessionStorage.setItem("AnswerToCheck", ind);
+		window.location.href = "/checkAnswer";
+	}
+	function ShowAllAnswers(){
+
+		var Holder = document.getElementById('AllAnswersHolder');
+		var Table = CreateTable('AnswersHolder', 'MainTable', [Dictionary['Name'], Dictionary['Result'], Dictionary['Status'], Dictionary['Options']]);
+		for(var i = 0; i < AllAnswers.length; i++){
+			var Tr = CreateTr('Td', 'Td');
+			var ChoicesTd = CreateTd('', '', '');
+			Tr.append(CreateTd('', '', AllAnswers[i].answer.Name));
+			Tr.append(CreateTd('', '', AllAnswers[i].answer.Percentage));
+			Tr.append(CreateTd('', '', ConvertState(AllAnswers[i].answer.Status)));
+			ChoicesTd.append(CreateButton('', '', 'ChooseAnswer('+i+')', Dictionary['Select']));
+			Tr.append(ChoicesTd);
+			Table.append(Tr);
+		}
+		Holder.append(Table);
+
+
+	}
+</script>
+
+</html>
