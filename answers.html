@@ -3,7 +3,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h1>Testo „<span id="TestName"></span>“ atsakymai</h1>
+<h1>Testo „<span id="TestName"></span>“ rezultatai</h1>
 <div id="AllAnswersHolder"></div>
 <style>
 .MainTable{
@@ -57,7 +57,7 @@
 			var Tr = CreateTr('Td', 'Td');
 			var ChoicesTd = CreateTd('', '', '');
 			Tr.append(CreateTd('', '', AllAnswers[i].answer.Name));
-			Tr.append(CreateTd('', '', AllAnswers[i].answer.Percentage));
+			Tr.append(CreateTd('', '', (AllAnswers[i].answer.Percentage*100) + "%"));
 			Tr.append(CreateTd('', '', ConvertState(AllAnswers[i].answer.Status)));
 			ChoicesTd.append(CreateButton('', '', 'ChooseAnswer('+i+')', Dictionary['Select']));
 			Tr.append(ChoicesTd);

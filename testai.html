@@ -78,7 +78,7 @@
 		Holder.append(AllTestsTable);
 	}
 	function DeleteTest(index){
-		socket.emit('DeleteTest', index);
+		socket.emit('DeleteTest', RealIndex[index]);
 		RemoveElementById('TestRow'+index);
 	}
 	function SelectTest(index){

@@ -71,10 +71,10 @@
 	socket.emit('CheckValidity', {username: sessionStorage.getItem('username'), password: sessionStorage.getItem('password'), index: sessionStorage.getItem('CurrentTest')});
 	socket.on('GetValidity', function(data){
 		if(data.valid){
-			document.getElementById("NMA").innerHTML = "data is valid";
 			socket.emit('AskForATest', IndexOfThisTest);
 		}else{
-			window.location.href = '/bbd';
+			console.log(sessionStorage.getItem('CurrentTest') + " yra index");
+			// window.location.href = '/';
 		}
 	});
 	

@@ -158,7 +158,7 @@ app.get('/klausimai', function(req, res){
 	res.sendFile(__dirname + '/klausimai.html');
 });
 app.get('/', function(req, res){
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/login.html');
 });
 app.get('/testai', function(req, res){
 	res.sendFile(__dirname + '/testai.html');
@@ -256,7 +256,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('AddNewTest', function(data){
 		if(!existsCreds(data.username, data.password)) return;
 		testai.visiTestai.push({Belongs: data.username, Name: '', Questions: [],  Time:250, Code:GetCode()});
-		socket.emit('GetNewTest', {Name: '', newIndex: testai.visiTestai.length});
+		socket.emit('GetNewTest', {Name: '', newIndex: testai.visiTestai.length-1});
 	});
 	socket.on('GiveTest', function(data){
 		var ret = findTestByNum(data.testId);
