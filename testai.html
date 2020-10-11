@@ -24,7 +24,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h1>Testai</h1>
+<h1><span id="username">- </span>testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
 	<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
 	<div class="TestDataHolder" id="TestDataHolder">
@@ -32,9 +32,25 @@
 	</div>
 </div>
 <script>
+	var UserName = sessionStorage.getItem("username");
+	var Password = sessionStorage.getItem("password");
+	socket.emit('CheckValidity', {username: UserName, password: Password});
+	socket.on('GetValidity', function(data){
+		if(data.valid == 1){
+			valid = 1;
+			UserName = data.username;	
+			Password = data.password;
+			document.getElementById("username").innerHTML = UserName + " ";
+			socket.emit('AskForAllTests', {username: UserName, password: Password});
+		} 
+		else {
+			window.location.href = '/';
+		}
+	});
+
 	var AllTests = [];
 	var RealIndex = [];
-	socket.emit('AskForAllTests');
+	
 	socket.on('GetAllTests', function (data){
 		AllTests = data;
 		LoadAllTests();
@@ -56,7 +72,7 @@
 		var AllTestsTable = CreateTable('AllTestsTable', 'AllTestsTable', [Dictionary['TestName'], Dictionary['Functions']]);
 		for(var i = 0; i < AllTests.length; i++){
 			if(AllTests[i].Hidden == 1) continue;
-			RealIndex[i] = i;
+			RealIndex[i] = AllTests[i].RealIndex;
 			AllTestsTable.append(CreateTestRow(AllTests[i], i));
 		}
 		Holder.append(AllTestsTable);
@@ -66,11 +82,11 @@
 		RemoveElementById('TestRow'+index);
 	}
 	function SelectTest(index){
-		sessionStorage.setItem('CurrentTest', index);
+		sessionStorage.setItem('CurrentTest', RealIndex[index]);
 		window.location.href = '/testas';
 	}
 	function AddNewTest(){
-		socket.emit('AddNewTest');
+		socket.emit('AddNewTest', {username: UserName, password: Password});
 	}
 	socket.on('GetNewTest', function(data){
 		RealIndex[AllTests.length] = data.newIndex;

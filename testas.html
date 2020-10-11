@@ -43,7 +43,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h1>Testai</h1>
+<h1 id="NMA">Testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
 	<div class="TestDataHolder" id="TestDataHolder"></div>
 	<br />
@@ -68,7 +68,16 @@
 	var NewQuestions = new Set();
 	var AllQuestionsAreShown = false;
 	var IndexOfThisTest = sessionStorage.getItem('CurrentTest');
-	socket.emit('AskForATest', IndexOfThisTest);
+	socket.emit('CheckValidity', {username: sessionStorage.getItem('username'), password: sessionStorage.getItem('password'), index: sessionStorage.getItem('CurrentTest')});
+	socket.on('GetValidity', function(data){
+		if(data.valid){
+			document.getElementById("NMA").innerHTML = "data is valid";
+			socket.emit('AskForATest', IndexOfThisTest);
+		}else{
+			window.location.href = '/bbd';
+		}
+	});
+	
 	socket.on('GetTheTest', function (data){
 		ThisTest = data;
 		DisplayThisTest();

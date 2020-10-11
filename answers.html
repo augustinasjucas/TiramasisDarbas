@@ -3,7 +3,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h1>Atsakymai</h1>
+<h1>Testo „<span id="TestName"></span>“ atsakymai</h1>
 <div id="AllAnswersHolder"></div>
 <style>
 .MainTable{
@@ -21,22 +21,24 @@
 <script>
 	var TestCode = sessionStorage.getItem('testData');
 	if(TestCode == null) window.location.href = '/';
-	var UserName = sessionStorage.getItem("Username");
-	var Password = sessionStorage.getItem("Password");
-	socket.emit('CheckValidity', {username: UserName, password: Password, index: sessionStorage.getItem("AnswerToCheck")});
+	var UserName = sessionStorage.getItem("username");
+	var Password = sessionStorage.getItem("password");
+	socket.emit('CheckValidity', {username: UserName, password: Password, index: sessionStorage.getItem('CurrentTest')});
 	var valid = 0;
 	socket.on('GetValidity', function(data){
-		if(data == 1) valid = 1;
+		if(data.valid == 1){
+			socket.emit('GetAnswersByCode', TestCode);
+		}
 		else {
 			window.location.href = '/';
 		}
 	});
 
 	var AllAnswers;
-	socket.emit('GetAnswersByCode', TestCode);
+	
 	socket.on('SendAnswersByCode', function(data){
-		AllAnswers = data;
-		console.log('got ir');
+		AllAnswers = data.answers;
+		document.getElementById("TestName").innerHTML = data.name;
 		ShowAllAnswers();
 	});
 	function ConvertState(val){

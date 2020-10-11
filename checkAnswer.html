@@ -9,12 +9,11 @@
 	var AnswerIndex = sessionStorage.getItem("AnswerToCheck");
 	if(AnswerIndex == null) window.location.href = '/';
 	var CurrentTestInd = sessionStorage.getItem("CurrentTest");
-	var UserName = sessionStorage.getItem("Username");
-	var Password = sessionStorage.getItem("Password");
+	var UserName = sessionStorage.getItem("username");
+	var Password = sessionStorage.getItem("password");
 	socket.emit('CheckValidity', {username: UserName, password: Password, index: CurrentTestInd});
-	var valid = 0;
 	socket.on('GetValidity', function(data){
-		if(data == 1) valid = 1;
+		if(data.valid == 1) valid = 1;
 		else {
 			window.location.href = '/';
 		}

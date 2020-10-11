@@ -54,6 +54,10 @@ function KlausimaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
 	fs.writeFile('visiKlausimai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
 }
+function LoginsImeskIFaila(ka){
+	var ls = JSON.stringify(ka);
+	fs.writeFile('logins.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+}
 function TestaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
 	fs.writeFile('testai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
@@ -63,10 +67,11 @@ function AtsakymaImeskIFaila(ka){
 	fs.writeFile('answers.json', ls, 'utf8', NepavykoIrasyti); // write it back 
 }
 
-function SimplifyTests(test){
+function SimplifyTests(test, name){
 	var Return = [];
 	for(var i = 0; i < test.length; i++){
-		var Plus = {'Name': test[i].Name, 'Hidden': test[i].Hidden};
+		if(test[i].Belongs != name) continue;
+		var Plus = {'Name': test[i].Name, 'Hidden': test[i].Hidden, 'RealIndex': i};
 		Return.push(Plus);
 	}
 	return Return;
@@ -78,6 +83,12 @@ function NepavykoIrasyti(err){
 		console.log("Iraseme i faila");
 	}
 }
+function getTestNameByCode(code){
+	for(var i = 0; i < testai.visiTestai.length; i++){
+		if(testai.visiTestai[i].Code == code) return testai.visiTestai[i].Name;
+	}
+	return "";
+}
 function GetCode(){
 
 	while(true){
@@ -87,6 +98,12 @@ function GetCode(){
 		}
 		if(is == 1) return code;
 	}
+}
+function existsCreds(name, pass){
+	for(var i = 0; i < logins.logins.length; i++){
+		if(logins.logins[i].username == name && logins.logins[i].password == pass) return true;
+	}
+	return false;
 }
 function FindAnswers(code){
 	var ret = [];
@@ -112,6 +129,7 @@ function ProcessAnswer(answer){
 function IrasinekKlausimusIrTestus(){
 	KlausimaImeskIFaila(visiKlausimai);
 	TestaImeskIFaila(testai);
+	LoginsImeskIFaila(logins);
 	AtsakymaImeskIFaila(answers);
 
 }
@@ -124,6 +142,7 @@ var io = require('socket.io').listen(server);
 var fs = require('fs');
 var visiKlausimai = require('./visiKlausimai.json');
 var testai = require('./testai.json');
+var logins = require('./logins.json');
 var answers = require('./answers.json');
 users = [];
 connections = [];
@@ -158,6 +177,9 @@ app.get('/answers', function(req, res){
 });
 app.get('/checkAnswer', function(req, res){
 	res.sendFile(__dirname + '/checkAnswer.html');
+});
+app.get('/login', function(req, res){
+	res.sendFile(__dirname + '/login.html');
 });
 
 
@@ -205,8 +227,9 @@ io.sockets.on('connection', function(socket){
 		visiKlausimai.klausimai.push(Question);
 		socket.emit('SavedNewQuestion', {newIndex: visiKlausimai.klausimai.length-1, oldIndex:PastIndex});
 	});
-	socket.on('AskForAllTests', function(){
-		socket.emit('GetAllTests', SimplifyTests(testai.visiTestai));
+	socket.on('AskForAllTests', function(data){
+		if(existsCreds(data.username, data.password))
+			socket.emit('GetAllTests', SimplifyTests(testai.visiTestai, data.username));
 	});
 	socket.on('DeleteTest', function(data){
 		testai.visiTestai[data].Hidden = 1;
@@ -231,7 +254,8 @@ io.sockets.on('connection', function(socket){
 		testai.visiTestai[data.index].Name = data.name;
 	});
 	socket.on('AddNewTest', function(data){
-		testai.visiTestai.push({Name: '', Questions: [],  Time:250, Code:GetCode()});
+		if(!existsCreds(data.username, data.password)) return;
+		testai.visiTestai.push({Belongs: data.username, Name: '', Questions: [],  Time:250, Code:GetCode()});
 		socket.emit('GetNewTest', {Name: '', newIndex: testai.visiTestai.length});
 	});
 	socket.on('GiveTest', function(data){
@@ -243,9 +267,24 @@ io.sockets.on('connection', function(socket){
 		socket.emit('AnswerReceived');
 	});
 	socket.on('GetAnswersByCode', function(data){
-		socket.emit('SendAnswersByCode', FindAnswers(data));
+		socket.emit('SendAnswersByCode', {answers: FindAnswers(data), name: getTestNameByCode(data)});
 	});
-	socket.on('CheckValidity', function(data){
-		socket.emit('GetValidity', 1);
+	socket.on('CheckValidity', function(data){ 
+		if(data.index == null){
+			socket.emit('GetValidity', {valid: existsCreds(data.username, data.password), username: data.username, password:data.password});
+		}else{
+			if(data.index >= testai.visiTestai.length) {
+				socket.emit('GetValidity', {valid: false});
+				return;
+			}
+			if(!existsCreds(data.username, data.password)) {
+				socket.emit('GetValidity', {valid: false});
+				return ;
+			}
+			var belongs = testai.visiTestai[data.index].Belongs;
+			if(belongs == data.username) socket.emit('GetValidity', {valid: true});
+			else socket.emit('GetValidity', {valid: false});
+		}
+		
 	});
 });
