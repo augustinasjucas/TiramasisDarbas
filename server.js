@@ -105,6 +105,7 @@ function existsCreds(name, pass){
 	}
 	return false;
 }
+
 function FindAnswers(code){
 	var ret = [];
 	for(var i = 0; i < answers.answers.length; i++){
@@ -117,13 +118,32 @@ function FindAnswers(code){
 
 }
 function ProcessAnswer(answer){
-	var correct = 0; var wrong = 0;
+	var correct = 0; var wrong = 0; var dvej = 0;
 	for(var i = 0; i < answer.Answers.length; i++){
-		if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer) correct++;
-		else wrong++;
+		if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer && answer.Answers[i].ChoAnswer != ""){
+			answer.Answers[i].IsCorr = 1;
+			correct++;
+		}else{
+			answer.Answers[i].IsCorr = 0;
+			wrong++;
+		}
+		if(answer.Answers[i].CorAnswer == ""){ answer.Answers[i].IsCorr = 2; dvej = 1;}
 	}
 	answer.Percentage = (correct *1.0) / (correct+wrong + 0.0);
+	if(dvej == 0) answers.answers[ind].Status = "Checked";
 	return answer;
+
+}
+function Recalculate(ind){
+	var r = 0, w = 0;
+	var dvej = 0;
+	for(var i = 0; i < answers.answers[ind].Answers.length; i++){
+		if(answers.answers[ind].Answers[i].IsCorr == 1) r++;
+		else w++;
+		if(answers.answers[ind].Answers[i].IsCorr == 2) dvej++;
+	}
+	if(dvej == 0) answers.answers[ind].Status = "Checked";
+	answers.answers[ind].Percentage = (r+0.0)/(r+w+0.0);
 
 }
 function IrasinekKlausimusIrTestus(){
@@ -269,7 +289,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('GetAnswersByCode', function(data){
 		socket.emit('SendAnswersByCode', {answers: FindAnswers(data), name: getTestNameByCode(data)});
 	});
-	socket.on('CheckValidity', function(data){ 
+	socket.on('CheckValidity', function(data){
 		if(data.index == null){
 			socket.emit('GetValidity', {valid: existsCreds(data.username, data.password), username: data.username, password:data.password});
 		}else{
@@ -286,5 +306,15 @@ io.sockets.on('connection', function(socket){
 			else socket.emit('GetValidity', {valid: false});
 		}
 		
+	});
+	socket.on('GiveToCheckAnswer', function (data){
+		if(data.index >= answers.answers.length) return;
+		if(answers.answers[data.index].Code != testai.visiTestai[data.testIndex].Code) return;
+		socket.emit('TakeToCheckAnswer', answers.answers[data.index]);
+	});
+	socket.on('ChangeAnswerCorr', function (data){
+		answers.answers[data.ansInd].Answers[data.ind].IsCorr = data.val;
+		Recalculate(data.ansInd);
+		// answers.answers[data.ansInd] = ProcessAnswer(answers.answers[data.ansInd]);
 	});
 });

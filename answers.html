@@ -42,7 +42,8 @@
 		ShowAllAnswers();
 	});
 	function ConvertState(val){
-		if(val == "NotChecked") return Dictionary['NotOverviewed'];
+		if(val == "NotChecked") return Dictionary['NeedToOverview'];
+		else if(val == "Checked") return Dictionary['NoNeedToOverview'];
 		return "<div>Nežinau</div>";
 	}
 	function ChooseAnswer(ind){

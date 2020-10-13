@@ -2,7 +2,10 @@ var socket = io.connect();
 
 var Dictionary = {};
 
-Dictionary['NotOverviewed'] = 'Neperžiūrėta';
+Dictionary['Closed'] = 'Uždaras';
+Dictionary['Open'] = 'Atviras';
+Dictionary['NoNeedToOverview'] = 'Nereikia peržiūrėti';
+Dictionary['NeedToOverview'] = 'Reikia peržiūrėti';
 Dictionary['CorrectAnswers'] = 'Tesingų atsakymų';
 Dictionary['Name'] = 'Vardas';
 Dictionary['Result'] = 'Rezultatas';
@@ -37,7 +40,10 @@ Dictionary['ToAddQuestion'] = 'Pridėti klausimą';
 Dictionary['ShowAllQuestions'] = 'Rodyti visus klausimus ↓';
 Dictionary['HideAllQuestions'] = 'Slėpti visus klausimus ↑';
 Dictionary['SaveAndGetBack'] = 'Išsaugoti ir grįžti atgal';
-
+Dictionary['Question'] = 'Klausimas';
+Dictionary['QuestionType'] = 'Klausimo tipas';
+Dictionary['CorrectAnswer'] = 'Teisingas atsakymas';
+Dictionary['ChosenAnswer'] = 'Pasirinktas atsakymas';
 function ConvertToInt(str){
 	var Return = 0;
 	for(var i = 0; i < str.length; i++){ 
