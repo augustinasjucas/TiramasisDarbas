@@ -1,13 +1,16 @@
 <html>
-
+<link rel="stylesheet" type="text/css" href="allStyle.css">
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
 <body>
 	<div class="loginHolder">
-		<input class="inputText" type="text" id="username" placeholder="Prisijungimo vardas" /> <br />
-		<input class="inputText" type="password" id="password" placeholder="Slaptažodis" /> <br />
-		<button onClick="Login()" class="SubmitLogin" id="loginButt">Prisijungti</button>
+		<div class="UpperHolderLogin"><h1 class="LoginName">Prisijungimas</h1></div>
+		<div class="LowerHolderLogin">
+			<input class="inputText" type="text" id="username" placeholder="Prisijungimo vardas" /> <br />
+			<input class="inputText" type="password" id="password" placeholder="Slaptažodis" /> <br />
+			<button onClick="Login()" class="SubmitLogin" id="loginButt">Prisijungti</button>
+		</div>
 	</div>
 	
 </body>

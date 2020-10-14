@@ -1,30 +1,10 @@
 <html>
-<style>
-	body{
-		margin: 1%;
-	}
-	.AllQuestionsHolder{
-		width: 90%;
-	}
-	.MainTable{
-		width: 100%;
-	}
-	.MainTable, .MainTable th, td{
-		padding: 0.2%;
-		border: 1px solid black;
-	}
-	.MainTable td, th{
-		width: 20%;
-	}
-	.RemoveQuestion, .ChangeQuestion{
-		width: 100%;
-	}
-</style>
+<link rel="stylesheet" type="text/css" href="allStyle.css">
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
 <h1 class="MainName">Klausimu duomenu baze</h1>
-<div class="FullQuestions">
+<div class="FullQuestions1">
 	<div class="AllQuestionsHolder" id="AllQuestionsHolder"></div>
 	<div class="BothButtons">
 		<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
@@ -32,13 +12,24 @@
 	</div>
 </div>
 <script>	
+	var UserName = sessionStorage.getItem("username");
+	var Password = sessionStorage.getItem("password");
+	socket.emit('CheckValidity', {username: UserName, password: Password});
+	socket.on('GetValidity', function(data){
+		if(data.valid == 1){
+			socket.emit('AskForQuestions');
+		}
+		else {
+			window.location.href = '/';
+		}
+	});
 	var AllQuestions = [];			// Global array wiht all questions, which were downloaded from sever
 	var NumberOfOptions = [];		// Global array with numbers of choices for each closed question
 	var IndicesOfNewQuestions = [];
 	var IsPressed = [];
 	var RealIndex = [];
 
-	socket.emit('AskForQuestions');
+	
 	socket.on('GetAllQuestions', function(data){
 		AllQuestions = data;
 		console.log(data);

@@ -3,19 +3,10 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
+<link rel="stylesheet" type="text/css" href="allStyle.css">
 <h1>Testo „<span id="TestName"></span>“ rezultatai</h1>
-<div id="AllAnswersHolder"></div>
+<div id="AllAnswersHolder" class="AllAnswersHolder"></div>
 <style>
-.MainTable{
-	width: 70%;
-}
-.MainTable, .MainTable th, td{
-	padding: 0.2%;
-	border: 1px solid black;
-}
-.MainTable td, th{
-	width: 20%;
-}
 
 </style>
 <script>
@@ -60,7 +51,7 @@
 			Tr.append(CreateTd('', '', AllAnswers[i].answer.Name));
 			Tr.append(CreateTd('', '', (AllAnswers[i].answer.Percentage*100) + "%"));
 			Tr.append(CreateTd('', '', ConvertState(AllAnswers[i].answer.Status)));
-			ChoicesTd.append(CreateButton('', '', 'ChooseAnswer('+i+')', Dictionary['Select']));
+			ChoicesTd.append(CreateButton('', 'ChooseButton', 'ChooseAnswer('+AllAnswers[i].realIndex+')', Dictionary['Select']));
 			Tr.append(ChoicesTd);
 			Table.append(Tr);
 		}

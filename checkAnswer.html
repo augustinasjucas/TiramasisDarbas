@@ -1,31 +1,14 @@
 <html>
 <style>
-.MainTable{
-	width: 90%;
-}
-.MainTable, .MainTable th, td{
-	padding: 0.2%;
-	border: 1px solid black;
-}
-.MainTable td, th{
-	width: 20%;
-}
-.Correct0{
-	background-color: #FF6849;
-}
-.Correct1{
-	background-color: #2FD100;
-}
-.Correct2{
-	background-color: yellow;
-}
+
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h2 id="TakerName"></h2>
-<div id="DataHolder">Surinkta <span id="ProcentsHolder"></span>%</div>
-<div id="QuestionsHolder"></div>
+<link rel="stylesheet" type="text/css" href="allStyle.css">
+<h2 id="TakerName" class="TakerName"></h2>
+<div class="ProcentsHolder" id="DataHolder">Surinkta: <span class="PercentSpan" id="ProcentsHolder"></span>%</div> <br />
+<div id="QuestionsHolder" class="QuestionsHolder"></div>
 <script>
 	var ThisAnswer;
 	var AnswerIndex = sessionStorage.getItem("AnswerToCheck");
@@ -72,8 +55,22 @@
 	}
 	function TwoButtons(ind){
 		var Holder = document.createElement("span");
-		var Cor = CreateButton("", "MakeTrue", "Make("+ind+", 1)", "MakeTrue");
-		var Fal = CreateButton("", "MakeFalse", "Make("+ind+", 0)", "MakeFalse");
+		var Cor = CreateButton("", "MakeTrue", "Make("+ind+", 1)", "");
+		var Fal = CreateButton("", "MakeFalse", "Make("+ind+", 0)", "");
+
+		var pav1 = document.createElement("img");
+		pav1.setAttribute("class", "MakeTrueImg");
+		pav1.setAttribute("src", "/TrueButton.png");
+		pav1.setAttribute("width", "30");
+
+		var pav2 = document.createElement("img");
+		pav2.setAttribute("class", "MakeFalseImg");
+		pav2.setAttribute("src", "/FalseButton.png");
+		pav2.setAttribute("width", "30");
+
+		
+		Cor.append(pav1);
+		Fal.append(pav2);
 		Holder.append(Cor);
 		Holder.append(Fal);
 		return Holder;

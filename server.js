@@ -109,9 +109,10 @@ function existsCreds(name, pass){
 function FindAnswers(code){
 	var ret = [];
 	for(var i = 0; i < answers.answers.length; i++){
-		var psh = {answer: -1, index: -1};
+		var psh = {answer: -1, index: -1, realIndex: -1};
 		if(answers.answers[i].Code != code) continue;
 		psh.answer = answers.answers[i];
+		psh.realIndex = i;
 		ret.push(psh);
 	}
 	return ret;
@@ -130,7 +131,7 @@ function ProcessAnswer(answer){
 		if(answer.Answers[i].CorAnswer == ""){ answer.Answers[i].IsCorr = 2; dvej = 1;}
 	}
 	answer.Percentage = (correct *1.0) / (correct+wrong + 0.0);
-	if(dvej == 0) answers.answers[ind].Status = "Checked";
+	if(dvej == 0) answer.Status = "Checked";
 	return answer;
 
 }
@@ -201,7 +202,16 @@ app.get('/checkAnswer', function(req, res){
 app.get('/login', function(req, res){
 	res.sendFile(__dirname + '/login.html');
 });
+app.get('/allStyle.css', function(req, res){
+	res.sendFile(__dirname + '/allStyle.css');
+});
 
+app.get('/TrueButton.png', function(req, res){
+	res.sendFile(__dirname + '/TrueButton.png');
+});
+app.get('/FalseButton.png', function(req, res){
+	res.sendFile(__dirname + '/FalseButton.png');
+});
 
 //var klausimas1 = SukurkKlausima("Testas", "Lietuviu", "Kiek man metu?", ["0", "1", "2", "3"], 0);
 //var klausimas2 = SukurkKlausima("Testas", "Matematika", "Kiek 2+2?", ["0", "7", "8", "4"], 3);
@@ -309,6 +319,7 @@ io.sockets.on('connection', function(socket){
 	});
 	socket.on('GiveToCheckAnswer', function (data){
 		if(data.index >= answers.answers.length) return;
+		console.log(data.index + " ir " + data.testIndex);
 		if(answers.answers[data.index].Code != testai.visiTestai[data.testIndex].Code) return;
 		socket.emit('TakeToCheckAnswer', answers.answers[data.index]);
 	});

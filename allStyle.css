@@ -1,0 +1,323 @@
+:root{
+	--borderColorOfLogin: black;
+	--borderSizeOfLogin: 5px;
+	--primaryColor: /*#8B80F9*/#00CECB;
+	--borderRadiusOfLogin: 9px;
+	--heightOfLogin: 23%;
+	--marginLoginPercent: 2%;
+	--borderSizeOfOther: 3px;
+	--deletionColor: #E4572E;
+	--secondaryColor: #D8D8D8;
+	--ternaryColor: #FFFFEA; /*#00FFFF;;*/
+	--agreeColor: #00CECB;
+	--dontKnowColor: #D8D8D8;
+}
+.PrimaryInputHolder{
+	width: 90%;
+	padding: 0.5%;
+	background-color: var(--secondaryColor);
+	margin: auto;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+}
+.FullQuestions1{
+	margin: auto;
+	width: 90%;
+}
+
+button, input{
+	font-family: "Lucida Console", Courier, monospace;
+}
+
+.MakeTrue, .MakeFalse{
+	background-color: white;
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+}
+body{
+	color: black;
+	font-family: "Lucida Console", Courier, monospace;
+	text-align: center;
+	background-color: var(--ternaryColor);
+	width: 100%;
+}
+.LoginName{
+	height: var(--heightOfLogin);
+}
+
+.UpperHolderLogin{
+	height: 15%;
+}
+.LowerHolderLogin{
+	height: 85%;
+
+}
+
+.loginHolder{
+	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	width: 30%;
+	height: 50%;
+	margin: auto;
+	background-color: var(--primaryColor);
+	text-align: center;
+	padding: 3%;
+}
+.inputText{
+	margin: var(--marginLoginPercent);
+	font-size: 90%;
+	text-align: center;
+	height: var(--heightOfLogin);
+	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	align-self: center;
+	width: 80%;
+}
+.SubmitLogin{
+	align-self: center;
+	font-size: 90%;
+	background-color: var(--secondaryColor);
+	text-align: center;
+	height: var(--heightOfLogin);
+	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	width: 80%;
+}
+
+.AllTestsDataHolder{
+	margin: auto;
+	align-self: center;
+	width: 70%;
+	text-align: center;
+}
+.AllTestsTable{
+	background-color: var(--primaryColor);
+	width: 100%;
+	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+
+}
+.AllTestsTable th, .AllTestsTable td{
+	text-align: center;
+	padding: 2.5%;
+	font-size: 120%;
+	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
+	border: 3px solid black;
+}
+.AllTestsTable th{
+	font-size: 140%;
+}
+.TestSelection, .TestDeletion, .NewTest{
+	width:40%;
+	padding: 3%;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	margin: 0.5%;
+	background-color: var(--secondaryColor);
+	align-self: center;
+}
+.TestDeletion{
+	background-color: var(--deletionColor);
+}
+
+.AllTestsDataHolder{
+	margin:auto;
+	align-self: center;
+	width: 90%;
+}
+.TestDataHolder1{
+	margin:auto;
+	width: 60%;
+	align-self: left;
+}
+.TestDataHolder{
+	/*margin:auto;*/
+	width: 60%;
+	align-self: left;
+}
+.TestDataTable{
+	background-color: var(--primaryColor);
+	align-self: center;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	/*margin: 2%;*/
+}
+
+.TestDataTable td{
+	padding: 2%;
+}
+.TestDataTable tr{
+	border: 1px solid black;
+	border-radius : var(--borderRadiusOfLogin);
+}
+.TestDataValueHolder{
+	font-weight: bold;
+}
+.TestDataTable button{
+	align-self: center;
+	font-size: 90%;
+	background-color: var(--secondaryColor);
+	text-align: center;
+	height: var(--heightOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	width: 100%;
+}
+.FullQuestions{
+	width: 100%;
+	align-self: center;
+	margin: auto;
+}
+.MainTable{
+	width: 100%;
+	background-color: var(--primaryColor);
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	/*margin: 2%;*/
+}
+.MainTable td{
+	padding: 1%;
+}
+.MainTable .ChangeQuestion, .MainTable .RemoveQuestion, .MainTable .ChooseButton{
+	align-self: center;
+	font-size: 85%;
+	background-color: var(--secondaryColor);
+	text-align: center;
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	width: 100%;
+	margin: 2%;
+}
+.MainTable td, th{
+	border-radius : var(--borderRadiusOfLogin);
+	border: 1px solid var(--borderColorOfLogin);;
+}
+.FunctionsField{
+	border: 0px solid black;
+}
+
+.AppOption, .RemoveOption{
+	width: 45%;
+	align-self: center;
+	font-size: 85%;
+	background-color: var(--secondaryColor);
+	text-align: center;
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+	margin: 2%;
+}
+.OptionChangeHolder{
+	width: 100%;
+}
+.OptionChange, .NewQuestionInput, .NewSubjectInput, .DatabaseAddQuestion, .NewDataInput, .NewAnswerInput{
+	background-color: var(--secondaryColor);
+	width: 100%;
+	margin: 2%;
+	padding: 2%;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+}
+.CreationButton{
+	background-color: var(--secondaryColor);
+	width: 25%;
+	margin: 2%;
+	padding: 2%;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+}
+.ShowAllQuestionsMark{
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+	background-color: var(--secondaryColor);
+	padding: 1%;
+	margin: 3%;
+}
+.AllAnswersHolder{
+	width: 90%;
+	margin: auto;
+}
+.Link{
+	margin: 3%;
+}
+
+.Correct0{
+	background-color: var(--deletionColor);
+}
+.Correct1{
+	background-color: var(--agreeColor);
+}
+.Correct2{
+	background-color: var(--dontKnowColor);
+}
+.QuestionsHolder{
+	margin: auto;
+	width: 90%;
+}
+.ProcentsHolder{
+	width: 40%;
+	padding: 0.5%;
+	background-color: var(--secondaryColor);
+	margin: auto;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+}
+.PercentSpan{
+	font-weight: bold;
+}
+
+
+
+
+/*
+.MainTable{
+	width: 70%;
+}
+.MainTable, .MainTable th, td{
+	padding: 0.2%;
+	border: 1px solid black;
+}
+.MainTable td, th{
+	width: 20%;
+}
+body{
+		margin: 1%;
+	}
+	.AllTestsDataHolder{
+		width: 90%;
+	}
+	.AllTestsDataHolder td{
+		width: 33.33333%;
+	}
+	.MainTable{
+		width: 100%;
+	}
+	.MainTable, .MainTable th, td{
+		padding: 0.2%;
+		border: 1px solid black;
+	}
+	.MainTable td, th{
+		width: 20%;
+	}
+	.RemoveQuestion, .ChangeQuestion{
+		width: 100%;
+	}
+	.TestDataTable{
+		border: 1px solid black;
+		width: 50%;
+	}
+	.TestDataTable td, .TestDataTable tr{
+		padding: 2%;
+		border: 0px;
+	}
+	.ShowAllQuestionsMark{
+		text-decoration: underline;
+		 cursor: pointer;
+	}
+	.DatabaseAddQuestion{
+		width: 100%
+	}
+	*/
+	/*background-color: blue;*/
+	/*display: flex;
+	flex-direction: column;
+	justify-content: space-between;*/

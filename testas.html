@@ -1,43 +1,9 @@
 <html>
+<link rel="stylesheet" type="text/css" href="allStyle.css">
 <style>
 	<style>
-	body{
-		margin: 1%;
-	}
-	.AllTestsDataHolder{
-		width: 90%;
-	}
-	.AllTestsDataHolder td{
-		width: 33.33333%;
-	}
-	.MainTable{
-		width: 100%;
-	}
-	.MainTable, .MainTable th, td{
-		padding: 0.2%;
-		border: 1px solid black;
-	}
-	.MainTable td, th{
-		width: 20%;
-	}
-	.RemoveQuestion, .ChangeQuestion{
-		width: 100%;
-	}
-	.TestDataTable{
-		border: 1px solid black;
-		width: 50%;
-	}
-	.TestDataTable td, .TestDataTable tr{
-		padding: 2%;
-		border: 0px;
-	}
-	.ShowAllQuestionsMark{
-		text-decoration: underline;
-		 cursor: pointer;
-	}
-	.DatabaseAddQuestion{
-		width: 100%
-	}
+
+	
 </style>
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -54,7 +20,7 @@
 			<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
 		</div>
 		<div id="FullDatabaseQuestionsHolder">
-			<div id="Link"><a id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></a></div>
+			<div id="Link"><button id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></button></div>
 			<div id="DatabaseQuestionsHolder"></div>
 		</div>
 	</div>

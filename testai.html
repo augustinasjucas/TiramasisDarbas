@@ -1,33 +1,12 @@
 <html>
-<style>
-	body{
-		margin: 1%;
-	}
-	.AllTestsDataHolder{
-		width: 90%;
-	}
-	.AllTestsTable{
-		width: 100%;
-	}
-	.AllTestsTable, .AllTestsTable th, td{
-		padding: 0.2%;
-		border: 1px solid black;
-	}
-	.AllTestsTable td, th{
-		width: 20%;
-	}
-	.RemoveQuestion, .ChangeQuestion{
-		width: 100%;
-	}
-</style>
-
+<link rel="stylesheet" type="text/css" href="allStyle.css">
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
 <h1><span id="username">- </span>testai</h1>
 <div class="AllTestsDataHolder" id="AllTestsDataHolder">
 	<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
-	<div class="TestDataHolder" id="TestDataHolder">
+	<div class="TestDataHolder1" id="TestDataHolder">
 		<button id="AddNewTest" class="NewTest" onClick="AddNewTest()">Sukurti naują testą</button>
 	</div>
 </div>
