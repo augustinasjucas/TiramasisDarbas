@@ -1,17 +1,18 @@
 :root{
 	--borderColorOfLogin: black;
 	--borderSizeOfLogin: 5px;
-	--primaryColor: /*#8B80F9*/#00CECB;
+	--primaryColor: /*#8B80F9*/#96ceb4;
 	--borderRadiusOfLogin: 9px;
 	--heightOfLogin: 23%;
 	--marginLoginPercent: 2%;
-	--borderSizeOfOther: 3px;
+	--borderSizeOfOther: 2px;
 	--deletionColor: #E4572E;
-	--secondaryColor: #D8D8D8;
-	--ternaryColor: #FFFFEA; /*#00FFFF;;*/
-	--agreeColor: #00CECB;
+	--secondaryColor: #c7d9e5  ;
+	--ternaryColor: #FFF3F3; /*#00FFFF;;*/
+	--agreeColor: #0e9aa7;
 	--dontKnowColor: #D8D8D8;
 }
+
 .PrimaryInputHolder{
 	width: 90%;
 	padding: 0.5%;
@@ -97,6 +98,7 @@ body{
 	border-radius : var(--borderRadiusOfLogin);
 
 }
+
 .AllTestsTable th, .AllTestsTable td{
 	text-align: center;
 	padding: 2.5%;
@@ -127,11 +129,12 @@ body{
 }
 .TestDataHolder1{
 	margin:auto;
-	width: 60%;
+	width: 100%;
 	align-self: left;
 }
 .TestDataHolder{
-	/*margin:auto;*/
+	/*background-color: red;*/
+	margin:auto;
 	width: 60%;
 	align-self: left;
 }
@@ -140,6 +143,8 @@ body{
 	align-self: center;
 	border-radius : var(--borderRadiusOfLogin);
 	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	margin: auto;
+	width: 100%;
 	/*margin: 2%;*/
 }
 
@@ -170,13 +175,19 @@ body{
 }
 .MainTable{
 	width: 100%;
-	background-color: var(--primaryColor);
+	background-color: var(--ternaryColor);
 	border-radius : var(--borderRadiusOfLogin);
-	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	/*border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);*/
 	/*margin: 2%;*/
 }
 .MainTable td{
 	padding: 1%;
+	background-color: var(--primaryColor);
+}
+.MainTable th{
+	background-color: var(--primaryColor);
+	/*background-color: #4E758D;*/
+	/*color:white;*/
 }
 .MainTable .ChangeQuestion, .MainTable .RemoveQuestion, .MainTable .ChooseButton{
 	align-self: center;
