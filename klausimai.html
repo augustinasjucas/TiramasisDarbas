@@ -1,4 +1,6 @@
 <html>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -11,7 +13,7 @@
 		<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
 	</div>
 </div>
-<script>	
+<script>
 	var UserName = sessionStorage.getItem("username");
 	var Password = sessionStorage.getItem("password");
 	socket.emit('CheckValidity', {username: UserName, password: Password});
@@ -29,7 +31,7 @@
 	var IsPressed = [];
 	var RealIndex = [];
 
-	
+
 	socket.on('GetAllQuestions', function(data){
 		AllQuestions = data;
 		console.log(data);
@@ -47,7 +49,7 @@
 	function LoadAllQuestions(){
 		var Holder = document.getElementById('AllQuestionsHolder');
 		var MainTable = CreateTable('MainTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
-		
+
 		Holder.append(MainTable);
 		for(var i = 0; i < AllQuestions.length; i++){
 			if(AllQuestions[i].Hidden == 1) continue;
@@ -149,7 +151,7 @@
 		Holder.append(CreateOpen(NewQuestion, index));
 		ChangeQuestion(index);
 	}
-	
+
 </script>
 
 </html>

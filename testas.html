@@ -1,31 +1,35 @@
 <html>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <style>
-	<style>
-
-	
-</style>
 </style>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
-<h1 id="NMA">Testai</h1>
-<div class="AllTestsDataHolder" id="AllTestsDataHolder">
-	<div class="TestDataHolder" id="TestDataHolder"></div>
-	<br />
-	<div class="FullQuestions">
-		<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
-		<div class="BothButtons">
-			<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
-			<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
-		</div>
-		<div id="FullDatabaseQuestionsHolder">
-			<div id="Link"><button id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></button></div>
-			<div id="DatabaseQuestionsHolder"></div>
+<body>
+
+	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+
+	<div class="AllTestsDataHolder" id="AllTestsDataHolder">
+		<div class="TestDataHolder" id="TestDataHolder"></div>
+		<br />
+		<div class="FullQuestions">
+			<div class="TestQuestionsHolder" id="TestQuestionsHolder"></div>
+			<div class="BothButtons">
+				<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
+				<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
+			</div>
+			<div id="FullDatabaseQuestionsHolder">
+				<div id="Link"><button id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></button></div>
+				<div id="DatabaseQuestionsHolder"></div>
+			</div>
 		</div>
 	</div>
-</div>
+</body>
 <script>
+	GetMenu(2);
 	var ThisTest;
 	var NumberOfOptions = [];
 	var RealIndex = [];
@@ -43,7 +47,7 @@
 			// window.location.href = '/';
 		}
 	});
-	
+
 	socket.on('GetTheTest', function (data){
 		ThisTest = data;
 		DisplayThisTest();
@@ -157,11 +161,11 @@
 		var Value = CreateTd(holderId, 'TestDataValueHolder', value);
 		var Change = CreateTd('', 'TestDataChangerHolder', '');
 		if(needButton) Change.append(CreateButton(id, 'TestDataChanger ChangeQuestion', onClick, buttonValue));
-		
+
 		Tr.append(Name);
 		Tr.append(Value);
 		Tr.append(Change);
-		
+
 		return Tr;
 	}
 	function DisplayTestData(){
@@ -217,7 +221,7 @@
 		socket.emit('ChangeName', {index: IndexOfThisTest, name: Value});
 		var Holder = document.getElementById('NameTd');
 		var Button = document.getElementById('TestName');
-		Holder.innerHTML = ThisTest.Name + ''; 
+		Holder.innerHTML = ThisTest.Name + '';
 		Button.innerHTML = Dictionary['ChangeName'];
 		Button.setAttribute('onClick', 'ChangeName()');
 	}
@@ -232,7 +236,7 @@
 			DisplayAllQuestions();
 		}
 	}
-	
+
 	function DisplayAllQuestions(){
 		var Holder = document.getElementById('DatabaseQuestionsHolder');
 		if(AllQuestionsAreShown){
@@ -277,7 +281,7 @@
 		}
 		window.location.href = 'testai';
 	}
-	
+
 </script>
 
 </html>

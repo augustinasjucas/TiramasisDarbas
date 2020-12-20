@@ -1,11 +1,14 @@
+
 <html>
     <link rel="stylesheet" type="text/css" href="allStyle.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <head>
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/mainFunctions.js"></script>
     </head>
-    
+
     <body>
         <div class="PrimaryInputHolder" id="PrimaryInputHolder">
             <input type="text" id="TestId" class="" placeholder="Kodas" ></input>
@@ -131,7 +134,7 @@
         });
         function GetData(){ // returns all data of this test - answers and choices
             SaveCurrentQuestion();
-            var ret = {Code: ThisTest.Code, Answers: [], Percentage: 0, Status: "NotChecked", Name: TakerName}; 
+            var ret = {Code: ThisTest.Code, Answers: [], Percentage: 0, Status: "NotChecked", Name: TakerName};
             for(var i = 0; i < ThisTest.Questions.length; i++){
                 var thisQuestion = {Question: "", Type: "", CorAnswer: "", ChoAnswer: ""};
                 thisQuestion.Question = ThisTest.Questions[i].Question;
@@ -150,6 +153,6 @@
             window.location.replace("/");
         });
     </script>
-    
+
 
 </html>

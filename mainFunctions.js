@@ -20,7 +20,7 @@ Dictionary['Unspecified'] = 'Nenurodytas';
 Dictionary['Question'] = 'Klausimas';
 Dictionary['ChoosingOptions'] = 'Pasirinkimo variantai';
 Dictionary['Answer'] = 'Atsakymas';
-Dictionary['Subject'] = 'Mokomasis dalykas'; 
+Dictionary['Subject'] = 'Mokomasis dalykas';
 Dictionary['Functions'] = 'Funkcijos';
 Dictionary['TestName'] = 'Testo pavadinimas';
 Dictionary['ToUpdateQuestion'] = 'Redaguoti klausimą';
@@ -28,14 +28,14 @@ Dictionary['ToRemoveQuestion'] = 'Panaikinti klausimą';
 Dictionary['DeleteTest'] = 'Panaikinti testą';
 Dictionary['QuestionIsOpen'] = 'Klausimas yra atviras';
 Dictionary['Save'] = 'Išsaugoti';
-Dictionary['ChooseTest'] = 'Pasirinkti testą';
+Dictionary['ChooseTest'] = 'Pasirinkti';
 Dictionary['ChangeName'] = 'Pakeisti pavadinimą';
-Dictionary['TestName'] = 'Testo pavadinimas:';
+Dictionary['TestName'] = 'Testo pavadinimas';
 Dictionary['TestCode'] = 'Testo kodas:';
 Dictionary['TestTime'] = 'Testo laikas:';
 Dictionary['ChangeTime'] = 'Pakeisti laiką';
 Dictionary['DeletionTest'] = 'Testo panakinimas';
-Dictionary['DeleteTest'] = 'Panaikinti testą';
+Dictionary['DeleteTest'] = 'Panaikinti';
 Dictionary['ToAddQuestion'] = 'Pridėti klausimą';
 Dictionary['ShowAllQuestions'] = 'Rodyti visus klausimus ↓';
 Dictionary['HideAllQuestions'] = 'Slėpti visus klausimus ↑';
@@ -44,9 +44,17 @@ Dictionary['Question'] = 'Klausimas';
 Dictionary['QuestionType'] = 'Klausimo tipas';
 Dictionary['CorrectAnswer'] = 'Teisingas atsakymas';
 Dictionary['ChosenAnswer'] = 'Pasirinktas atsakymas';
+
+function CreateA(link, name){
+	var A = document.createElement('a');
+	A.setAttribute('class', '');
+	A.setAttribute('href', link);
+	A.append(name);
+	return A;
+}
 function ConvertToInt(str){
 	var Return = 0;
-	for(var i = 0; i < str.length; i++){ 
+	for(var i = 0; i < str.length; i++){
 		if(0 <= str[i]-'0' && str[i]-'0' <= 9) Return = Return*10 + (str[i]-'0');
 		else {
 			Return = -1;
@@ -111,9 +119,9 @@ function CreateTable(id, clas, headers){
 	var Table = document.createElement('table');
 	Table.setAttribute('id', id);
 	Table.setAttribute('class', clas);
-	
+
 	var tr = CreateTr('TableHeaders', 'TableHeaders');
-	
+
 	for(var i = 0; i < headers.length; i++){
 		var th = document.createElement('th');
 		th.innerHTML = headers[i];
@@ -192,76 +200,76 @@ function CreateFunctionsField(index){
 	var Td = CreateTd('FunctionsField'+index, 'FunctionsField', '');
 	Td.append(CreateButton('ChangeQuestion'+index, 'ChangeQuestion', 'ChangeQuestion('+index+')', Dictionary['ToUpdateQuestion']));
 	Td.append(CreateBr());
-	Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));	
+	Td.append(CreateButton('RemoveQuestion'+index, 'RemoveQuestion', 'RemoveQuestion('+index+')', Dictionary['ToRemoveQuestion']));
 	return Td;
 }
 
 function CreateClosed(question, index){
 	var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Open');
-	
+
 	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
 	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
 	var OptionsField = CreateOptionsField(question.Options, index);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsField(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
 	Tr.append(AnswerField);
 	Tr.append(FunctionsField);
-	
+
 	return Tr;
 }
 function CreateOpen(question, index){
 	var Tr = CreateTr('QuestionRow'+index, 'QuestionRow Closed');
-	
+
 	var SubjectField = CreateTd('SubjectField'+index, 'SubjectField', question.Subject);
 	var QuestionField = CreateTd('QuestionField'+index, 'QuestionField', question.Question);
 	var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsField(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
 	Tr.append(AnswerField);
 	Tr.append(FunctionsField);
-	
+
 	return Tr;
 }
 function CreateClosedForDatabase(question, index){
 	var Tr = CreateTr('DatabaseQuestionRow'+index, 'DatabaseQuestionRow Open');
-	
+
 	var SubjectField = CreateTd('', 'DatabaseSubjectField', question.Subject);
 	var QuestionField = CreateTd('', 'DatabaseQuestionField', question.Question);
 	var OptionsField = CreateOptionsField(question.Options, index);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsFieldForDatabase(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
 	Tr.append(AnswerField);
 	Tr.append(FunctionsField);
-	
+
 	return Tr;
 }
 function CreateOpenForDatabase(question, index){
 	var Tr = CreateTr('DatabaseQuestionRow'+index, 'DatabaseQuestionRow Closed');
-	
+
 	var SubjectField = CreateTd('', 'DatabaseSubjectField', question.Subject);
 	var QuestionField = CreateTd('', 'DatabaseQuestionField', question.Question);
 	var OptionsField = CreateTd('', 'DatabaseOptionsField', Dictionary['QuestionIsOpen']);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsFieldForDatabase(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
 	Tr.append(AnswerField);
 	Tr.append(FunctionsField);
-	
+
 	return Tr;
 }
 function CreateFunctionsFieldForDatabase(index){
@@ -299,7 +307,7 @@ function TransformOptionsHolder(index, question){
 	OptionsHolder.append(CreateButton('AddOption'+index, 'AppOption', 'AddOption('+index+')', '+'));
 	OptionsHolder.append(CreateButton('RemoveOption'+index, 'RemoveOption', 'RemoveOption('+index+')', '-'));
 	NumberOfOptions[index] = question.Options.length; //// HERE!
-	
+
 	for(var i = 0; i < question.Options.length; i++){
 		OptionsHolder.append(CreateOption(index, i, question.Options[i]));
 	}
@@ -312,7 +320,7 @@ function UpdateClosedQuestion(question, index){
 	var OptionsField = CreateOptionsField(question.Options, index);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsField(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
@@ -327,7 +335,7 @@ function UpdateOpenQuestion(question, index){
 	var OptionsField = CreateTd('OptionsField'+index, 'OptionsField', Dictionary['QuestionIsOpen']);
 	var AnswerField = CreateAnswerField(question.Answer, index, question.Type);
 	var FunctionsField = CreateFunctionsField(index);
-	
+
 	Tr.append(SubjectField);
 	Tr.append(QuestionField);
 	Tr.append(OptionsField);
@@ -343,4 +351,30 @@ function GetAllOptions(index){
 }
 function GetQuestionChoiceButton(index){
 	return CreateButton("QuestionChoiceButton"+index, "QuestionChoiceButton", "ChooseQuestion("+index+")", (index+1) + "");
+}
+function TPSet(){
+	MathJax.typeset();
+}
+setInterval(TPSet, 100);
+function GetCurrentState(){
+	var ret = {"CurrentTest": '', "AnswerToCheck": ''};
+	ret.CurrentTest = sessionStorage.getItem('CurrentTest');
+	ret.AnswerToCheck = sessionStorage.getItem('AnswerToCheck');
+	return ret;
+}
+
+function GetMenu(wh){
+
+	socket.emit('GiveMenu', {'data': GetCurrentState(), 'where': wh});
+	socket.on('GetMenu', function (data){
+		console.log(data);
+		var Holder = document.getElementById('MenuHolder');
+		Holder.innerHTML = '';
+		var index = 0;
+		for(var x in data){
+			var y = data[x];
+			Holder.append(CreateA(y.link, y.word));
+			if(++index != data.length) Holder.append(' > ');
+		}
+	});
 }

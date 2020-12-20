@@ -2,6 +2,9 @@
 <link rel="stylesheet" type="text/css" href="allStyle.css">
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 <h1>MOKINIO INTERFACE</h1>
 <h2 id="vardoVieta"></h1>
 <form id="messageForm">
@@ -11,7 +14,10 @@
 	<input type="submit" />
 
 </form>
-
+<body>
+	When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+</body>
 <script>
 
 	$(function(){
@@ -19,7 +25,7 @@
 		var $messageForm = $('#messageForm');
 		var $message = $('#message');
 		var $vardoVieta = $('#vardoVieta');
-		
+
 		$messageForm.submit(function(e){	///ISSIUNCIAME VARDA
 			e.preventDefault();
 			console.log('submitted');

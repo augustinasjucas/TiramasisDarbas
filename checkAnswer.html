@@ -2,14 +2,22 @@
 <style>
 
 </style>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
-<h2 id="TakerName" class="TakerName"></h2>
-<div class="ProcentsHolder" id="DataHolder">Surinkta: <span class="PercentSpan" id="ProcentsHolder"></span>%</div> <br />
-<div id="QuestionsHolder" class="QuestionsHolder"></div>
+<body>
+
+	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+
+	<h2 id="TakerName" class="TakerName"></h2>
+	<div class="ProcentsHolder" id="DataHolder">Surinkta: <span class="PercentSpan" id="ProcentsHolder"></span>%</div> <br />
+	<div id="QuestionsHolder" class="QuestionsHolder"></div>
+</body>
 <script>
+	GetMenu(4);
 	var ThisAnswer;
 	var AnswerIndex = sessionStorage.getItem("AnswerToCheck");
 	if(AnswerIndex == null) window.location.href = '/';
@@ -68,7 +76,7 @@
 		pav2.setAttribute("src", "/FalseButton.png");
 		pav2.setAttribute("width", "30");
 
-		
+
 		Cor.append(pav1);
 		Fal.append(pav2);
 		Holder.append(Cor);

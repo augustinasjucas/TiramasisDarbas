@@ -1,15 +1,16 @@
 <html>
-
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/mainFunctions.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
-<h1>Testo „<span id="TestName"></span>“ rezultatai</h1>
-<div id="AllAnswersHolder" class="AllAnswersHolder"></div>
-<style>
-
-</style>
+<body>
+	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+	<div id="AllAnswersHolder" class="AllAnswersHolder"></div>
+</body>
 <script>
+	GetMenu(3);
 	var TestCode = sessionStorage.getItem('testData');
 	if(TestCode == null) window.location.href = '/';
 	var UserName = sessionStorage.getItem("username");
@@ -26,10 +27,9 @@
 	});
 
 	var AllAnswers;
-	
+
 	socket.on('SendAnswersByCode', function(data){
 		AllAnswers = data.answers;
-		document.getElementById("TestName").innerHTML = data.name;
 		ShowAllAnswers();
 	});
 	function ConvertState(val){

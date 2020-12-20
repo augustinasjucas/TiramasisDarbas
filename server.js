@@ -17,6 +17,46 @@ Klausimai:
 
 */
 
+function getPath(where, data){
+    var links = {
+        1: 'testai',
+        2: 'testas',
+        3: 'answers',
+        4: 'checkAnswer'
+    };
+
+    var menu = {
+        1: [1],
+        2: [1, 2],
+        3: [1, 2, 3],
+        4: [1, 2, 3, 4]
+    };
+    var ret = [];
+    if(where == 1){ // testai
+        ret.push({word: "Pradžia", link: links[1]});
+    }
+    if(where == 2){
+        if(testai.visiTestai[data.CurrentTest] == null) return [];
+        ret.push({word: "Pradžia", link: links[1]});
+        ret.push({word: "Testas „" + testai.visiTestai[data.CurrentTest].Name + "“", link: links[2]});
+    }
+    if(where == 3){
+        if(testai.visiTestai[data.CurrentTest] == null) return [];
+        ret.push({word: "Pradžia", link: links[1]});
+        ret.push({word: "Testas „" + testai.visiTestai[data.CurrentTest].Name + "“", link: links[2]});
+        ret.push({word: "Rezultatai", link: links[3]});
+    }
+    if(where == 4){
+        if(testai.visiTestai[data.CurrentTest] == null) return [];
+        if(answers.answers[data.AnswerToCheck].Name == null) return [];
+        ret.push({word: "Pradžia", link: links[1]});
+        ret.push({word: "Testas „" + testai.visiTestai[data.CurrentTest].Name + "“", link: links[2]});
+        ret.push({word: "Rezultatai", link: links[3]});
+        ret.push({word: "Mokinio " + answers.answers[data.AnswerToCheck].Name + " rezultatas", link: links[4]});
+    }
+    return ret;
+}
+
 function SukurkKlausima(type, dalykas, klausimas, variantai, atsakymas){
 	var ret = {Type: type, Dalykas: dalykas, Klausimas: klausimas, Variantai: variantai, Atsakymas: atsakymas};
 	return ret;
@@ -29,7 +69,7 @@ function PridekKlausima(klausimas){
 function PridekTesta(pavadinimas, testas){
 	testai.visiTestai.push(testas);
 }
-// Adomas ir Ieva. 
+// Adomas ir Ieva.
 function SukurkTesta(numeriai){
 
 	var testas = [];
@@ -52,19 +92,19 @@ function findTestByNum(num){
 }
 function KlausimaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
-	fs.writeFile('visiKlausimai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+	fs.writeFile('visiKlausimai.json', ls, 'utf8', NepavykoIrasyti); // write it back
 }
 function LoginsImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
-	fs.writeFile('logins.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+	fs.writeFile('logins.json', ls, 'utf8', NepavykoIrasyti); // write it back
 }
 function TestaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
-	fs.writeFile('testai.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+	fs.writeFile('testai.json', ls, 'utf8', NepavykoIrasyti); // write it back
 }
 function AtsakymaImeskIFaila(ka){
 	var ls = JSON.stringify(ka);
-	fs.writeFile('answers.json', ls, 'utf8', NepavykoIrasyti); // write it back 
+	fs.writeFile('answers.json', ls, 'utf8', NepavykoIrasyti); // write it back
 }
 
 function SimplifyTests(test, name){
@@ -205,6 +245,9 @@ app.get('/login', function(req, res){
 app.get('/allStyle.css', function(req, res){
 	res.sendFile(__dirname + '/allStyle.css');
 });
+app.get('/nav.html', function(req, res){
+	res.sendFile(__dirname + '/nav.html');
+});
 
 app.get('/TrueButton.png', function(req, res){
 	res.sendFile(__dirname + '/TrueButton.png');
@@ -226,11 +269,11 @@ io.sockets.on('connection', function(socket){
 	var Vardas = "";
 
 	connections.push(socket);
-	
+
 	console.log('Connected: Connected to ' + connections.length + ' connections');
-	
+
 	socket.on('disconnect', function(data){ // Atsijungia
-		connections.splice(connections.indexOf(socket), 1); 
+		connections.splice(connections.indexOf(socket), 1);
 	});
 
 	socket.on('vardas', function(data){
@@ -315,7 +358,7 @@ io.sockets.on('connection', function(socket){
 			if(belongs == data.username) socket.emit('GetValidity', {valid: true});
 			else socket.emit('GetValidity', {valid: false});
 		}
-		
+
 	});
 	socket.on('GiveToCheckAnswer', function (data){
 		if(data.index >= answers.answers.length) return;
@@ -328,4 +371,7 @@ io.sockets.on('connection', function(socket){
 		Recalculate(data.ansInd);
 		// answers.answers[data.ansInd] = ProcessAnswer(answers.answers[data.ansInd]);
 	});
+    socket.on('GiveMenu', function(data){
+        socket.emit('GetMenu', getPath(data.where, data.data));
+    });
 });

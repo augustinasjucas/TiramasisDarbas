@@ -1,5 +1,6 @@
 <html>
-
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
@@ -18,13 +19,13 @@
 
 	$(function(){
 		var socket = io.connect();
-		
+
 		$('#pridekTesta').submit(function(e){
 			e.preventDefault();
 			console.log('Siunciamas testas');
 			var stringas = $('#listas').val();
 			var skaiciai = stringas.split(',').map(Number);
-			
+
 			var testas = {pavadinimas:$('#pavadinimas').val(), klausimai:[], laikas: 100, kodas: -1};
 			socket.emit('pridekTesta', testas);
 		});

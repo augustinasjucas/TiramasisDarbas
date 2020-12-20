@@ -6,13 +6,37 @@
 	--heightOfLogin: 23%;
 	--marginLoginPercent: 2%;
 	--borderSizeOfOther: 2px;
+	--minimalBorderSize: 1px;
 	--deletionColor: #E4572E;
 	--secondaryColor: #c7d9e5  ;
 	--ternaryColor: #FFF3F3; /*#00FFFF;;*/
-	--agreeColor: #0e9aa7;
+	--agreeColor: #0E9AA7;
 	--dontKnowColor: #D8D8D8;
+	/* width: 100%; */
 }
 
+.MenuDiv{
+	height: 100px;
+	position: fixed;
+	opacity: 100%;
+	width: 100%;
+	margin-bottom: 1.5%;
+	top: 0px;
+	left: 0px;
+	background-color: var(--primaryColor);
+	height: auto;
+	align-self: flex-start;
+	border-bottom: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+}
+.MenuHolder{
+	display: inline-block;
+}
+.MenuHolder a{
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: none;
+	color: black;
+}
 .PrimaryInputHolder{
 	width: 90%;
 	padding: 0.5%;
@@ -36,11 +60,14 @@ button, input{
 	border-radius : var(--borderRadiusOfLogin);
 }
 body{
+	padding-top: 80px;
 	color: black;
 	font-family: "Lucida Console", Courier, monospace;
 	text-align: center;
 	background-color: var(--ternaryColor);
 	width: 100%;
+	align-self: flex-start;
+	margin: auto;
 }
 .LoginName{
 	height: var(--heightOfLogin);
@@ -92,26 +119,25 @@ body{
 	text-align: center;
 }
 .AllTestsTable{
-	background-color: var(--primaryColor);
 	width: 100%;
-	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
-	border-radius : var(--borderRadiusOfLogin);
-
 }
 
 .AllTestsTable th, .AllTestsTable td{
+	background-color: var(--primaryColor);
 	text-align: center;
-	padding: 2.5%;
-	font-size: 120%;
-	border: var(--borderSizeOfLogin) solid var(--borderColorOfLogin);
-	border: 3px solid black;
+	padding: 1%;
+	font-size: 100%;
+	margin: 0px;
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
 }
+
 .AllTestsTable th{
-	font-size: 140%;
+	padding: 1%;
 }
 .TestSelection, .TestDeletion, .NewTest{
-	width:40%;
-	padding: 3%;
+	width:20%;
+	padding: 1%;
 	border-radius : var(--borderRadiusOfLogin);
 	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 	margin: 0.5%;
@@ -173,12 +199,22 @@ body{
 	align-self: center;
 	margin: auto;
 }
-.MainTable{
+.MainTable {
 	width: 100%;
 	background-color: var(--ternaryColor);
 	border-radius : var(--borderRadiusOfLogin);
 	/*border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);*/
 	/*margin: 2%;*/
+}
+
+.MainTable .Correct0{
+	background-color: var(--deletionColor);
+}
+.MainTable .Correct1{
+	background-color: var(--agreeColor);
+}
+.MainTable .Correct2{
+	background-color: var(--dontKnowColor);
 }
 .MainTable td{
 	padding: 1%;
@@ -199,7 +235,7 @@ body{
 	width: 100%;
 	margin: 2%;
 }
-.MainTable td, th{
+.MainTable td, .MainTable th{
 	border-radius : var(--borderRadiusOfLogin);
 	border: 1px solid var(--borderColorOfLogin);;
 }
@@ -234,11 +270,11 @@ body{
 	margin: 2%;
 	padding: 2%;
 	border-radius : var(--borderRadiusOfLogin);
-	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 }
 .ShowAllQuestionsMark{
 	border-radius : var(--borderRadiusOfLogin);
-	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 	background-color: var(--secondaryColor);
 	padding: 1%;
 	margin: 3%;
@@ -251,15 +287,6 @@ body{
 	margin: 3%;
 }
 
-.Correct0{
-	background-color: var(--deletionColor);
-}
-.Correct1{
-	background-color: var(--agreeColor);
-}
-.Correct2{
-	background-color: var(--dontKnowColor);
-}
 .QuestionsHolder{
 	margin: auto;
 	width: 90%;
@@ -270,7 +297,7 @@ body{
 	background-color: var(--secondaryColor);
 	margin: auto;
 	border-radius : var(--borderRadiusOfLogin);
-	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);	
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 }
 .PercentSpan{
 	font-weight: bold;
