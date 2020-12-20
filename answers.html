@@ -6,7 +6,7 @@
 <script src="/mainFunctions.js"></script>
 <link rel="stylesheet" type="text/css" href="allStyle.css">
 <body>
-	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+	<div class="MenuDiv"><div id="MenuHolder" class="MenuHolder"></div></div>
 	<div id="AllAnswersHolder" class="AllAnswersHolder"></div>
 </body>
 <script>
@@ -49,7 +49,7 @@
 			var Tr = CreateTr('Td', 'Td');
 			var ChoicesTd = CreateTd('', '', '');
 			Tr.append(CreateTd('', '', AllAnswers[i].answer.Name));
-			Tr.append(CreateTd('', '', (AllAnswers[i].answer.Percentage*100) + "%"));
+			Tr.append(CreateTd('', '', (AllAnswers[i].answer.Percentage*100).toFixed(2) + "%"));
 			Tr.append(CreateTd('', '', ConvertState(AllAnswers[i].answer.Status)));
 			ChoicesTd.append(CreateButton('', 'ChooseButton', 'ChooseAnswer('+AllAnswers[i].realIndex+')', Dictionary['Select']));
 			Tr.append(ChoicesTd);

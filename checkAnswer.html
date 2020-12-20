@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="allStyle.css">
 <body>
 
-	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+	<div class="MenuDiv"><div id="MenuHolder" class="MenuHolder"></div></div>
 
 	<h2 id="TakerName" class="TakerName"></h2>
 	<div class="ProcentsHolder" id="DataHolder">Surinkta: <span class="PercentSpan" id="ProcentsHolder"></span>%</div> <br />
@@ -47,7 +47,7 @@
 			else w++;
 		}
 		ThisAnswer.Percentage = (r+0.0)/(r+w+0.0);
-		document.getElementById("ProcentsHolder").innerHTML = ThisAnswer.Percentage*100;
+		document.getElementById("ProcentsHolder").innerHTML = (ThisAnswer.Percentage*100).toFixed(2);;
 	}
 	function Make(ind, what){
 		for(var i = 0; i < 5; i++){
@@ -101,7 +101,7 @@
 	}
 	function LoadData(){
 		var PercentHolder = document.getElementById("ProcentsHolder");
-		PercentHolder.innerHTML = ThisAnswer.Percentage*100;
+		PercentHolder.innerHTML = (ThisAnswer.Percentage*100).toFixed(2);
 		var NameHolder = document.getElementById("TakerName");
 		NameHolder.innerHTML = ThisAnswer.Name;
 		var Holder = document.getElementById("QuestionsHolder");

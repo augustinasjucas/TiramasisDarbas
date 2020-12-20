@@ -31,8 +31,8 @@ Dictionary['Save'] = 'Išsaugoti';
 Dictionary['ChooseTest'] = 'Pasirinkti';
 Dictionary['ChangeName'] = 'Pakeisti pavadinimą';
 Dictionary['TestName'] = 'Testo pavadinimas';
-Dictionary['TestCode'] = 'Testo kodas:';
-Dictionary['TestTime'] = 'Testo laikas:';
+Dictionary['TestCode'] = 'Testo kodas';
+Dictionary['TestTime'] = 'Testo laikas';
 Dictionary['ChangeTime'] = 'Pakeisti laiką';
 Dictionary['DeletionTest'] = 'Testo panakinimas';
 Dictionary['DeleteTest'] = 'Panaikinti';
@@ -355,7 +355,7 @@ function GetQuestionChoiceButton(index){
 function TPSet(){
 	MathJax.typeset();
 }
-setInterval(TPSet, 100);
+// setInterval(TPSet, 100);
 function GetCurrentState(){
 	var ret = {"CurrentTest": '', "AnswerToCheck": ''};
 	ret.CurrentTest = sessionStorage.getItem('CurrentTest');

@@ -22,15 +22,10 @@ function getPath(where, data){
         1: 'testai',
         2: 'testas',
         3: 'answers',
-        4: 'checkAnswer'
+        4: 'checkAnswer',
+        5: 'klausimai'
     };
 
-    var menu = {
-        1: [1],
-        2: [1, 2],
-        3: [1, 2, 3],
-        4: [1, 2, 3, 4]
-    };
     var ret = [];
     if(where == 1){ // testai
         ret.push({word: "Pradžia", link: links[1]});
@@ -53,6 +48,10 @@ function getPath(where, data){
         ret.push({word: "Testas „" + testai.visiTestai[data.CurrentTest].Name + "“", link: links[2]});
         ret.push({word: "Rezultatai", link: links[3]});
         ret.push({word: "Mokinio " + answers.answers[data.AnswerToCheck].Name + " rezultatas", link: links[4]});
+    }
+    if(where == 5){
+        ret.push({word: "Pradžia", link: links[1]});
+        ret.push({word: "Duomenų bazė", link: links[5]});
     }
     return ret;
 }

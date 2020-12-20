@@ -10,7 +10,7 @@
 <script src="/mainFunctions.js"></script>
 <body>
 
-	<div class="MenuDiv"><p id="MenuHolder" class="MenuHolder"></p></div>
+	<div class="MenuDiv"><div id="MenuHolder" class="MenuHolder"></div></div>
 
 	<div class="AllTestsDataHolder" id="AllTestsDataHolder">
 		<div class="TestDataHolder" id="TestDataHolder"></div>
@@ -44,7 +44,6 @@
 			socket.emit('AskForATest', IndexOfThisTest);
 		}else{
 			console.log(sessionStorage.getItem('CurrentTest') + " yra index");
-			// window.location.href = '/';
 		}
 	});
 
@@ -60,6 +59,7 @@
 	function DisplayThisTest(){
 		DisplayTestData();
 		DisplayTestQuestions();
+		TPSet();
 	}
 	function DisplayTestQuestions(){
 		var Holder = document.getElementById('TestQuestionsHolder');
@@ -81,6 +81,7 @@
 		TransformOptionsHolder(index, ThisTest.Questions[index]);
 		TransformFunctionsHolder(index);
 		TransformFunctionsHolder(index, ThisTest.Questions[index]);
+		TPSet();
 	}
 	function SaveClosedQuestion(index){
 		var ThisQuestion = NewClosedQuestionForm();
@@ -128,11 +129,13 @@
 	function SaveQuestion(index){
 		if(ThisTest.Questions[index].Type == 'Closed') SaveClosedQuestion(index);
 		if(ThisTest.Questions[index].Type == 'Open') SaveOpenQuestion(index);
+		TPSet();
 	}
 	function RemoveQuestion(index){
 		ThisTest.Questions[index].Hidden = 1;
 		RemoveElementById('QuestionRow'+index);
 		if(!NewQuestions.has(index)) socket.emit('DeleteQuestionFromTest', {testIndex: IndexOfThisTest, questionIndex: RealIndex[index]});
+		TPSet();
 	}
 	function CreateNewClosedQuestion(){
 		var index = ThisTest.Questions.length;
@@ -160,7 +163,8 @@
 		var Name = CreateTd('', 'TestDataNameHolder', name);
 		var Value = CreateTd(holderId, 'TestDataValueHolder', value);
 		var Change = CreateTd('', 'TestDataChangerHolder', '');
-		if(needButton) Change.append(CreateButton(id, 'TestDataChanger ChangeQuestion', onClick, buttonValue));
+		console.log('onCL = ' + onClick);
+		if(needButton) Change.append(CreateButton(id, 'TestDataChanger ChangeQuestion' + (onClick == 'DeleteTest()' ? ' DeletionButton' : ''), onClick, buttonValue));
 
 		Tr.append(Name);
 		Tr.append(Value);
@@ -179,6 +183,7 @@
 		Table.append(CreateTestDataRow('TestDeletion', Dictionary['DeletionTest'], '', 'DeleteTest()', Dictionary['DeleteTest'], 1, 'DeletionTd'));
 		Table.append(CreateTestDataRow('SaveTest', Dictionary['SaveAndGetBack'], '', 'SaveAndBack()', Dictionary['Save'], 1, ''));
 		Holder.append(Table);
+		TPSet();
 	}
 	function ViewAnswers(){
 		window.sessionStorage.setItem('testData', ThisTest.Code);
@@ -255,6 +260,7 @@
 			}
 			AllQuestionsAreShown = true;
 		}
+		TPSet();
 	}
 	function AddDatabaseQuestion(index){
 		var MainTable = document.getElementById('QuestionsTable');
@@ -266,6 +272,7 @@
 		RealIndex[IndexHere] = IndexHere;
 		MainTable.append(Klausimas);
 		socket.emit('AddNewQuestionToTest', {testIndex: IndexOfThisTest, question: AllQuestions[index], pastIndex: IndexHere});
+		TPSet();
 	}
 	function DisplayError(data){
 		alert(data);

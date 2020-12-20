@@ -10,15 +10,18 @@
     </head>
 
     <body>
-        <div class="PrimaryInputHolder" id="PrimaryInputHolder">
-            <input type="text" id="TestId" class="" placeholder="Kodas" ></input>
-            <input type="text" id="TakerName" class="" placeholder="Vardas" ></input>
-            <button value="Pasirinkti" id="SendId" class="SendButton" onclick="SendId()">Siųsti</button>
+        <div class="loginHolder" id="PrimaryInputHolder">
+            <div class="UpperHolderLogin"><span class="LoginName">Įveskite savo duomenis</span></div>
+            <div class="LowerHolderLogin">
+                <input type="text" id="TestId" class="InputText" placeholder="Kodas"  value="7214"></input> <br>
+                <input type="text" id="TakerName" class="InputText" placeholder="Vardas" ></input> <br>
+                <button value="Pasirinkti" id="SendId" class="SubmitLogin" onclick="SendId()">Siųsti</button>
+            </div>
         </div>
-        <div id="TestDataHolder" class="TestDataHolder">
-            <div id="MetaInfoHolder" class="MetaInfoHolder"></div>
+        <div id="TestDataHolder" class="TestDataHolder" hidden>
             <div id="SelectorHolder" class="SelectorHolder"></div>
             <div id="QuestionHolder" class="QuestionHolder"></div>
+            <div id="MetaInfoHolder" class="MetaInfoHolder"></div>
         </div>
     </body>
     <script>
@@ -87,7 +90,6 @@
                 Answers[CurrentQuestion] = document.getElementById("AnswerBox").value;
             }else{
             }
-
         }
         function ChooseQuestion(ind){
             SaveCurrentQuestion();
@@ -99,6 +101,7 @@
             Table.append(CreateTr("QuestionTableQuestion", "QuestionTableQuestion"));
             var QuestionH = document.getElementById("QuestionTableQuestion");
             QuestionH.append(QuestionForm(ThisTest.Questions[ind]));
+            TPSet();
         }
 
 
@@ -110,7 +113,8 @@
                 Answers[i] = -1;
                 SelectorHolder.append(GetQuestionChoiceButton(i));
             }
-
+            document.getElementById("TestDataHolder").removeAttribute("hidden");
+            TPSet();
         }
         function SendId(){
             var Button = document.getElementById("SendId");
