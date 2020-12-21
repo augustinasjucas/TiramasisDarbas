@@ -1,6 +1,12 @@
 
 <html>
     <link rel="stylesheet" type="text/css" href="allStyle.css">
+    <style>
+        body{
+            padding-top: 1%;
+            padding-bottom: 4%;
+        }
+    </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <head>
@@ -18,13 +24,17 @@
                 <button value="Pasirinkti" id="SendId" class="SubmitLogin" onclick="SendId()">Siųsti</button>
             </div>
         </div>
-        <div id="TestDataHolder" class="TestDataHolder" hidden>
+        <div id="TestDataHolder" class="TestDataHolder1" hidden>
+            <div id="Timer" class="Timer">Testas nepradėtas</div>
             <div id="SelectorHolder" class="SelectorHolder"></div>
             <div id="QuestionHolder" class="QuestionHolder"></div>
             <div id="MetaInfoHolder" class="MetaInfoHolder"></div>
         </div>
     </body>
     <script>
+        var Started = false;
+        var CurTime = -1;
+        var don = 0;
         var TakerName = "";
         var Answers = [];
         var ThisTest;
@@ -47,12 +57,13 @@
             alert(x);
         }
         function CreateRadio(id, clas, nam, val, chk){
-            var Holder = CreateDiv('', '', '');
+            var Holder = CreateDiv('', 'BulletHolder', '');
             var Input = document.createElement('input');
             Input.setAttribute('type', 'radio');
             Input.setAttribute('value', val);
             Input.setAttribute('name', nam);
             Input.setAttribute('id', id);
+            Input.setAttribute('class', clas);
             if(chk) Input.setAttribute('checked', chk);
             var Label = document.createElement('label');
             Label.setAttribute('for', val);
@@ -63,9 +74,9 @@
             return Holder;
         }
         function BulletPoints(a){
-            var Holder = CreateDiv('', '', '');
+            var Holder = CreateDiv('', 'BulletsHolder', '');
             for(var i = 0; i < a.length; i++){
-                var Radio = CreateRadio("Option-"+i , "", "nam", a[i], (Answers[CurrentQuestion] == i));
+                var Radio = CreateRadio("Option-"+i , "Radio", "nam", a[i], (Answers[CurrentQuestion] == i));
                 Holder.append(Radio);
             }
             return Holder;
@@ -91,7 +102,36 @@
             }else{
             }
         }
+        function ToTrailing(num){
+            if(num < 10) return '0' + ('' + num);
+            return num;
+        }
+        function DisplayTime(){
+            var Holder = document.getElementById('Timer');
+            var Copy = CurTime;
+            var Seconds = Copy%60; Copy /= 60; Copy = Math.floor(Copy);
+            var Minutes = Copy%60; Copy /= 60; Copy = Math.floor(Copy);
+            var Hours = Copy;
+            // console.log(Seconds + " " + Minutes + " " + Hours);
+            Holder.innerHTML = '' + ToTrailing(Hours) + ':' + ToTrailing(Minutes) + ':' + ToTrailing(Seconds);
+        }
+        function TakeTime(){
+            CurTime--;
+            if(CurTime <= 0){
+                if(!don) SendAnswers();
+                don = 1;
+            }
+            DisplayTime();
+        }
+        function StartTimer(){
+            CurTime = ThisTest.Time*60;
+            setInterval(TakeTime, 1000);
+        }
         function ChooseQuestion(ind){
+            if(!Started){
+                Started = 1;
+                StartTimer();
+            }
             SaveCurrentQuestion();
             CurrentQuestion = ind;
             var QuestionHolder = document.getElementById("QuestionHolder");
@@ -108,7 +148,7 @@
         function DisplayThisTest(){
             var SelectorHolder = document.getElementById("SelectorHolder");
             var MetaInfoHolder = document.getElementById("MetaInfoHolder");
-            MetaInfoHolder.append(CreateButton("send", "send", "SendAnswers()", Dictionary['Send']));
+            MetaInfoHolder.append(CreateButton("send", "Timer", "SendAnswers()", Dictionary['Send']));
             for(var i = 0; i < ThisTest.Questions.length; i++){
                 Answers[i] = -1;
                 SelectorHolder.append(GetQuestionChoiceButton(i));

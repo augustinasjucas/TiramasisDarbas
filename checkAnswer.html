@@ -10,7 +10,10 @@
 <link rel="stylesheet" type="text/css" href="allStyle.css">
 <body>
 
-	<div class="MenuDiv"><div id="MenuHolder" class="MenuHolder"></div></div>
+	<div class="MenuDiv">
+		<div id="MenuHolder" class="MenuHolder"></div>
+		<div class="DatabaseLink"><a href="klausimai">Duomenų bazė</a></div>
+	</div>
 
 	<h2 id="TakerName" class="TakerName"></h2>
 	<div class="ProcentsHolder" id="DataHolder">Surinkta: <span class="PercentSpan" id="ProcentsHolder"></span>%</div> <br />
@@ -26,7 +29,6 @@
 	var Password = sessionStorage.getItem("password");
 	socket.emit('CheckValidity', {username: UserName, password: Password, index: CurrentTestInd});
 	socket.on('GetValidity', function(data){
-		console.log("??");
 		if(data.valid == 1){
 			socket.emit('GiveToCheckAnswer', {index: AnswerIndex, testIndex: CurrentTestInd});
 		}
@@ -59,7 +61,7 @@
 			socket.emit('ChangeAnswerCorr', {ansInd: AnswerIndex, ind: ind, val: what});
 		}
 		RecalcPercentage();
-
+		TPSet();
 	}
 	function TwoButtons(ind){
 		var Holder = document.createElement("span");
@@ -82,7 +84,6 @@
 		Holder.append(Cor);
 		Holder.append(Fal);
 		return Holder;
-
 	}
 	function GetChoicesTable(answers){
 		var Table = CreateTable("", "MainTable", [Dictionary['Question'], Dictionary['QuestionType'], Dictionary['CorrectAnswer'], Dictionary['ChosenAnswer'], Dictionary['Functions']]);
@@ -107,6 +108,7 @@
 		var Holder = document.getElementById("QuestionsHolder");
 		var ChoicesTable = GetChoicesTable(ThisAnswer.Answers);
 		Holder.append(ChoicesTable);
+		TPSet();
 	}
 
 </script>

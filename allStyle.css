@@ -9,7 +9,7 @@
 	--minimalBorderSize: 1px;
 	--deletionColor: #FF6B6B; /*#BE6E46;*/
 	--secondaryColor: #c7d9e5  ;
-	--ternaryColor: #FFF3F3; /*#00FFFF;*/
+	--ternaryColor: #EEF7FB; /*#00FFFF;*/
 	--agreeColor: var(--primaryColor);
 	--dontKnowColor: #D8D8D8;
 	--font: "Trebuchet MS";
@@ -61,7 +61,7 @@
 	width: 90%;
 }
 
-button, input{
+button, input, textarea{
 	font-family: var(--font), Courier, monospace;
 }
 
@@ -82,7 +82,7 @@ body{
 }
 .LoginName{
 	height: var(--heightOfLogin);
-	
+
 	font-weight: bolder;
 	font-size: 200%;
 }
@@ -324,11 +324,12 @@ body{
 	border-radius: 50%;
 	margin: 1%;
 	padding: 2%;
+	text-align: center;
 	background-color: var(--secondaryColor);
 	border:  var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 	border-radius : var(--borderRadiusOfLogin);
 }
-.TestDataHolder{
+.TestDataHolder1{
 	height: 90%;
 	width: 90%;
 	align-items: center;
@@ -353,6 +354,7 @@ body{
 	align-items: center;
 	height: 80%;
 	margin: 1%;
+	padding: .1%;
 	width: 100%;
 }
 .QuestionTable{
@@ -365,7 +367,52 @@ body{
 	border:  var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 	border-radius : var(--borderRadiusOfLogin);
 	text-align: center;
+	font-size: 120%;
 }
 .MetaInfoHolder{
 	/* background-color: green; */
+}
+.BulletHolder{
+	padding: 1%;
+	vertical-align: middle;
+}
+.Radio{
+	vertical-align: middle;
+	cursor: pointer;
+	height: 20px;
+	width: 20px;
+	background-color: var(--secondaryColor);
+	border-radius: 50%;
+	margin: 1%;
+}
+.QuestionTable{
+	width: 90%;
+	height: 97%;
+}
+.QuestionTableQuestion{
+	align-items: center;
+	margin: auto;
+	height: 85%;
+	width: 85%;
+}
+.AnswerBox{
+	background-color: var(--ternaryColor);
+	resize: none;
+	font-size: 120%;
+	display: block;
+	margin: auto;
+	resize: none;
+	width: 100%;
+	height: 100%;
+	align-self: center;
+	border:  var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
+}
+.Timer{
+	width: 20%;
+	margin: auto;
+	padding: 1%;
+	background-color: var(--secondaryColor);
+	border:  var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	border-radius : var(--borderRadiusOfLogin);
 }
