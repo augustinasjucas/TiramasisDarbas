@@ -34,6 +34,7 @@
     <script>
         var Started = false;
         var CurTime = -1;
+        var CurInd = 0;
         var don = 0;
         var TakerName = "";
         var Answers = [];
@@ -150,6 +151,7 @@
             var MetaInfoHolder = document.getElementById("MetaInfoHolder");
             MetaInfoHolder.append(CreateButton("send", "Timer", "SendAnswers()", Dictionary['Send']));
             for(var i = 0; i < ThisTest.Questions.length; i++){
+                if(ThisTest.Questions[i].Hidden == 1) continue;
                 Answers[i] = -1;
                 SelectorHolder.append(GetQuestionChoiceButton(i));
             }
@@ -180,6 +182,7 @@
             SaveCurrentQuestion();
             var ret = {Code: ThisTest.Code, Answers: [], Percentage: 0, Status: "NotChecked", Name: TakerName};
             for(var i = 0; i < ThisTest.Questions.length; i++){
+                if(ThisTest.Questions[i].Hidden == 1) continue;
                 var thisQuestion = {Question: "", Type: "", CorAnswer: "", ChoAnswer: ""};
                 thisQuestion.Question = ThisTest.Questions[i].Question;
                 thisQuestion.Type = ThisTest.Questions[i].Type;
@@ -193,7 +196,7 @@
             socket.emit('NewAnswers', GetData());
         }
         socket.on('AnswerReceived', function(){
-            alert("sent");
+            alert("Išsiųsta");
             window.location.replace("/");
         });
     </script>

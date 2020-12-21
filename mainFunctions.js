@@ -350,7 +350,7 @@ function GetAllOptions(index){
 	return Return;
 }
 function GetQuestionChoiceButton(index){
-	return CreateButton("QuestionChoiceButton"+index, "QuestionChoiceButton", "ChooseQuestion("+index+")", (index+1) + "");
+	return CreateButton("QuestionChoiceButton"+index, "QuestionChoiceButton", "ChooseQuestion("+index+")", (++CurInd) + "");
 }
 function TPSet(){
 	MathJax.typeset();
