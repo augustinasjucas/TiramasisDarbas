@@ -23,6 +23,7 @@
 			<div class="BothButtons">
 				<button class="CreationButton" onClick="CreateNewClosedQuestion()">Pridėti uždarą klausimą</button>
 				<button class="CreationButton" onClick="CreateNewOpenQuestion()">Pridėti atvirą klausimą</button>
+				<button class="CreationButton" onClick="CreateNewMultipleQuestion()">Pridėti klausimą su daug variantų</button>
 			</div>
 			<div id="FullDatabaseQuestionsHolder">
 				<div id="Link"><button id="ShowAllQuestionsMark" class="ShowAllQuestionsMark" onclick="GetAllQuestions()">Rodyti visus klausimus <span id="Arrow" class="Arrow">↓</span></button></div>
@@ -64,6 +65,15 @@
 		DisplayTestQuestions();
 		TPSet();
 	}
+	function ChangeMultipleChoiceAnswer(questionIndex, optionIndex){
+		if(ThisTest.Questions[questionIndex].Answer.includes(optionIndex)){
+			ThisTest.Questions[questionIndex].Answer.splice(ThisTest.Questions[questionIndex].Answer.indexOf(optionIndex), 1);
+			ChangeMultipleChoiceButton(questionIndex, optionIndex, 0);
+		}else{
+			ThisTest.Questions[questionIndex].Answer.push(optionIndex);
+			ChangeMultipleChoiceButton(questionIndex, optionIndex, 1);
+		}
+	}
 	function DisplayTestQuestions(){
 		var Holder = document.getElementById('TestQuestionsHolder');
 		var MainTable = CreateTable('QuestionsTable', 'MainTable', [Dictionary['Subject'], Dictionary['Question'], Dictionary['ChoosingOptions'], Dictionary['Answer'], Dictionary['Functions']]);
@@ -72,6 +82,7 @@
 			var Klausimas;
 			if(ThisTest.Questions[i].Type == 'Open') Klausimas = CreateOpen(ThisTest.Questions[i], i);
 			if(ThisTest.Questions[i].Type == 'Closed') Klausimas = CreateClosed(ThisTest.Questions[i], i);
+			if(ThisTest.Questions[i].Type == 'Multiple') Klausimas = CreateMultiple(ThisTest.Questions[i], i);
 			RealIndex[i] = i;
 			MainTable.append(Klausimas);
 		}
@@ -87,6 +98,7 @@
 		TPSet();
 	}
 	function SaveClosedQuestion(index){
+		console.log("seivinu " + index);
 		var ThisQuestion = NewClosedQuestionForm();
 		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
 		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
@@ -105,7 +117,8 @@
 			ThisTest.Questions[index] = ThisQuestion;
 			UpdateClosedQuestion(ThisQuestion, index);
 		}else{
-			console.log('BLOGAS KLAUSIMAS!!');
+			console.log("BLOGAI");
+			DisplayError(Dictionary['BadClosedTest']);
 		}
 	}
 	function SaveOpenQuestion(index){
@@ -122,16 +135,45 @@
 				UpdateOpenQuestion(ThisQuestion, index);
 				return;
 			}
-			socket.emit('EditQuestionInTest', {'index': RealIndex[index], 'question': ThisQuestion, 'testIndex': IndexOfThisTest});
+			socket.emit('EditQuestionInTest', {'questionIndex': RealIndex[index], 'question': ThisQuestion, 'testIndex': IndexOfThisTest});
 			ThisTest.Questions[index] = ThisQuestion;
 			UpdateOpenQuestion(ThisQuestion, index);
 		}else{
-			console.log('BLOGAS KLAUSIMAS!!');
+			DisplayError(Dictionary['BadOpenTest']);
 		}
+		TPSet();
+	}
+	function GetMultipleQuestionChosenAnswers(index){
+		return ThisTest.Questions[index].Answer;
+	}
+	function SaveMultipleQuestion(index){
+		console.log("seivinama");
+		var ThisQuestion = NewMultipleQuestionForm();
+		ThisQuestion.Subject = document.getElementById('NewSubjectInput'+index).value;
+		ThisQuestion.Question = document.getElementById('NewQuestionInput'+index).value;
+		ThisQuestion.Options = GetAllOptions(index);
+		ThisQuestion.Answer = GetMultipleQuestionChosenAnswers(index);//document.getElementById('NewAnswerInput'+index).value;
+		if(FitsAsMultiple(ThisQuestion)){
+			if(NewQuestions.has(index)){
+				if(IsPressed[index]) return;
+				IsPressed[index] = true;
+				ThisTest.Questions[index] = ThisQuestion;
+				socket.emit('AddNewQuestionToTest', {question: ThisQuestion, pastIndex: index, testIndex: IndexOfThisTest});
+				UpdateMultipleQuestion(ThisQuestion, index);
+				return;
+			}
+			socket.emit('EditQuestionInTest', {'questionIndex': RealIndex[index], 'question': ThisQuestion, 'testIndex': IndexOfThisTest});
+			ThisTest.Questions[index] = ThisQuestion;
+			UpdateMultipleQuestion(ThisQuestion, index);
+		}else{
+			DisplayError(Dictionary['BadMultipleTest']);
+		}
+		TPSet();
 	}
 	function SaveQuestion(index){
 		if(ThisTest.Questions[index].Type == 'Closed') SaveClosedQuestion(index);
 		if(ThisTest.Questions[index].Type == 'Open') SaveOpenQuestion(index);
+		if(ThisTest.Questions[index].Type == 'Multiple') SaveMultipleQuestion(index);
 		TPSet();
 	}
 	function RemoveQuestion(index){
@@ -156,6 +198,16 @@
 		var Holder = document.getElementById('QuestionsTable');
 		ThisTest.Questions.push(NewQuestion);
 		Holder.append(CreateOpen(NewQuestion, index));
+		ChangeQuestion(index);
+		IsPressed[index] = false;
+		NewQuestions.add(index);
+	}
+	function CreateNewMultipleQuestion(){
+		var index = ThisTest.Questions.length;
+		var NewQuestion = NewMultipleQuestionForm();
+		var Holder = document.getElementById('QuestionsTable');
+		ThisTest.Questions.push(NewQuestion);
+		Holder.append(CreateMultiple(NewQuestion, index));
 		ChangeQuestion(index);
 		IsPressed[index] = false;
 		NewQuestions.add(index);
@@ -259,6 +311,7 @@
 				if(AllQuestions[i].Hidden == 1) continue;
 				if(AllQuestions[i].Type == 'Closed') MainTable.append(CreateClosedForDatabase(AllQuestions[i], i));
 				if(AllQuestions[i].Type == 'Open') MainTable.append(CreateOpenForDatabase(AllQuestions[i], i));
+				if(AllQuestions[i].Type == 'Multiple') MainTable.append(CreateMultipleForDatabase(AllQuestions[i], i));
 				NumberOfOptions.push(-1);
 			}
 			AllQuestionsAreShown = true;
@@ -271,14 +324,12 @@
 		var IndexHere = ThisTest.Questions.length;
 		if(AllQuestions[index].Type == 'Open') Klausimas = CreateOpen(AllQuestions[index], IndexHere);
 		if(AllQuestions[index].Type == 'Closed') Klausimas = CreateClosed(AllQuestions[index], IndexHere);
+		if(AllQuestions[index].Type == 'Multiple') Klausimas = CreateMultiple(AllQuestions[index], IndexHere);
 		ThisTest.Questions.push(AllQuestions[index]);
 		RealIndex[IndexHere] = IndexHere;
 		MainTable.append(Klausimas);
 		socket.emit('AddNewQuestionToTest', {testIndex: IndexOfThisTest, question: AllQuestions[index], pastIndex: IndexHere});
 		TPSet();
-	}
-	function DisplayError(data){
-		alert(data);
 	}
 	function FitsData(){
 		if(ThisTest.Name == '') return false;
@@ -290,6 +341,10 @@
 			return;
 		}
 		window.location.href = 'testai';
+	}
+	function MakeMultipleAnswersConsistent(index, mxval){
+		var where = ThisTest.Questions[index].Answer.indexOf(mxval);
+		if(where != -1) ThisTest.Questions[index].Answer.splice(where, 1);
 	}
 
 </script>

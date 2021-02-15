@@ -21,7 +21,7 @@
             <div class="LowerHolderLogin">
                 <input type="text" id="TestId" class="InputText" placeholder="Kodas"  value=""></input> <br>
                 <input type="text" id="TakerName" class="InputText" placeholder="Vardas" ></input> <br>
-                <button value="Pasirinkti" id="SendId" class="SubmitLogin" onclick="SendId()">Siųsti</button>
+                <input type="submit" value="Pasirinkti" id="SendId" class="SubmitLogin" onclick="SendId()" value="Siųsti" />
             </div>
         </div>
         <div id="TestDataHolder" class="TestDataHolder1" hidden>
@@ -54,9 +54,7 @@
             }
             return ret;
         }
-        function DisplayError(x){
-            alert(x);
-        }
+
         function CreateRadio(id, clas, nam, val, chk){
             var Holder = CreateDiv('', 'BulletHolder', '');
             var Input = document.createElement('input');
@@ -74,6 +72,23 @@
             Holder.append(Label);
             return Holder;
         }
+        function CreateCheck(id, clas, nam, val, chk){
+            var Holder = CreateDiv('', 'CheckHolder', '');
+            var Input = document.createElement('input');
+            Input.setAttribute('type', 'checkbox');
+            Input.setAttribute('value', val);
+            Input.setAttribute('name', nam);
+            Input.setAttribute('id', id);
+            Input.setAttribute('class', clas);
+            if(chk) Input.setAttribute('checked', chk);
+            var Label = document.createElement('label');
+            Label.setAttribute('for', val);
+            Label.innerHTML = val;
+            Holder.append(Input);
+            Holder.append(Label);
+            return Holder;
+        }
+
         function BulletPoints(a){
             var Holder = CreateDiv('', 'BulletsHolder', '');
             for(var i = 0; i < a.length; i++){
@@ -82,11 +97,22 @@
             }
             return Holder;
         }
+        function CheckPoints(a){ // a - options
+            var Holder = CreateDiv('', 'BulletsHolder', '');
+            for(var i = 0; i < a.length; i++){
+                console.log(i  + " yra pajungtas = " + Answers[CurrentQuestion].includes(i));
+                var Checkbox = CreateCheck("Option-"+i , "Radio", "nam", a[i], (Answers[CurrentQuestion].includes(i) ? 1 : 0));
+                Holder.append(Checkbox);
+            }
+            return Holder;
+        }
         function QuestionForm(q){
             if(q.Type == "Open"){
                 return CreateTextArea("AnswerBox", "AnswerBox", (Answers[CurrentQuestion] == -1 ? "" : Answers[CurrentQuestion]));
             }else if(q.Type == "Closed"){
                 return BulletPoints(q.Options);
+            }else if(q.Type == "Multiple"){
+                return CheckPoints(q.Options);
             }
             return "ERROR";
         }
@@ -100,7 +126,13 @@
                 }
             }else if(ThisTest.Questions[CurrentQuestion].Type == "Open"){
                 Answers[CurrentQuestion] = document.getElementById("AnswerBox").value;
-            }else{
+            }else if(ThisTest.Questions[CurrentQuestion].Type == "Multiple"){
+                Answers[CurrentQuestion] = [];
+                for(var i = 0; i < ThisTest.Questions[CurrentQuestion].Options.length; i++){
+                    if(document.getElementById("Option-"+i).checked){
+                        Answers[CurrentQuestion].push(i);
+                    }
+                }
             }
         }
         function ToTrailing(num){
@@ -153,6 +185,11 @@
             for(var i = 0; i < ThisTest.Questions.length; i++){
                 if(ThisTest.Questions[i].Hidden == 1) continue;
                 Answers[i] = -1;
+                if(ThisTest.Questions[i].Type == "Multiple"){
+                    if(Answers[i].constructor !== Array) {
+                        Answers[i] = [];
+                    }
+                }
                 SelectorHolder.append(GetQuestionChoiceButton(i));
             }
             document.getElementById("TestDataHolder").removeAttribute("hidden");
@@ -166,7 +203,6 @@
             if(ButtonValue == -1){
                 DisplayError("Neteisingas kodas");
             }else socket.emit('GiveTest', {testId: ButtonValue});
-
         }
         socket.on('GetStudentATest', function (data){
             if(data.length == 0){
@@ -178,6 +214,18 @@
                 DisplayThisTest();
             }
         });
+        function ToStringMultiple(arr, options){
+            console.log("gaunu arr = ");
+            console.log(arr);
+            arr.sort();
+            // if(arr.length == 0) return Dictionary["NoCorrectAnswers"];
+            var ret = "";
+            for(var i = 0; i < arr.length; i++){
+                ret += options[arr[i]];
+                if(i != arr.length - 1) ret += ', ';
+            }
+            return ret;
+        }
         function GetData(){ // returns all data of this test - answers and choices
             SaveCurrentQuestion();
             var ret = {Code: ThisTest.Code, Answers: [], Percentage: 0, Status: "NotChecked", Name: TakerName};
@@ -186,8 +234,19 @@
                 var thisQuestion = {Question: "", Type: "", CorAnswer: "", ChoAnswer: ""};
                 thisQuestion.Question = ThisTest.Questions[i].Question;
                 thisQuestion.Type = ThisTest.Questions[i].Type;
-                thisQuestion.CorAnswer = (ThisTest.Questions[i].Type == "Open" ? ThisTest.Questions[i].Answer : ThisTest.Questions[i].Options[ThisTest.Questions[i].Answer]);
-                thisQuestion.ChoAnswer = (ThisTest.Questions[i].Type == "Open" ? Answers[i] : (Answers[i] == -1 ? -1 : ThisTest.Questions[i].Options[Answers[i]]));
+
+                if(ThisTest.Questions[i].Type == "Multiple"){
+                    console.log("klausimas " + i);
+                    console.log(ThisTest.Questions[i]);
+                    thisQuestion.CorAnswer = ToStringMultiple(ThisTest.Questions[i].Answer, ThisTest.Questions[i].Options);
+                    thisQuestion.ChoAnswer = ToStringMultiple(Answers[i], ThisTest.Questions[i].Options);
+                }else if(ThisTest.Questions[i].Type == "Closed"){
+                    thisQuestion.CorAnswer = ThisTest.Questions[i].Options[ThisTest.Questions[i].Answer];
+                    thisQuestion.ChoAnswer = (Answers[i] == -1 ? -1 : ThisTest.Questions[i].Options[Answers[i]]);
+                }else if(ThisTest.Questions[i].Type == "Open"){
+                    thisQuestion.CorAnswer = ThisTest.Questions[i].Answer;
+                    thisQuestion.ChoAnswer = Answers[i];
+                }
                 ret.Answers.push(thisQuestion);
             }
             return ret;
@@ -196,7 +255,7 @@
             socket.emit('NewAnswers', GetData());
         }
         socket.on('AnswerReceived', function(){
-            alert("Išsiųsta");
+            DisplaySuccess(Dictionary['Sent']);
             window.location.replace("/");
         });
     </script>

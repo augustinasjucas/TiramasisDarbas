@@ -15,7 +15,37 @@
 	--font: "Trebuchet MS";
 	/* width: 100%; */
 }
+.MultipleChoiceAnswerButton{
+	padding: 2.5%;
+	margin: 2%;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+	display: inline-flex;
+	width: auto;
+}
+.CorrectAnswerButton{
+	background-color: var(--secondaryColor);
+}
+.WrongAnswerButton{
+	background-color: var(--deletionColor);
+}
 
+.MainMessage{
+	width: 15%;
+	height: auto;
+	display:table-cell;
+	vertical-align:middle;
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	padding: 2%;
+	margin: 2%;
+	border-radius : var(--borderRadiusOfLogin);
+	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+}
+.ErrorMessage{
+	background-color: var(--deletionColor);
+}
 .MenuDiv{
 	position: fixed;
 	opacity: 100%;
@@ -67,6 +97,7 @@ button, input, textarea{
 
 .MakeTrue, .MakeFalse{
 	background-color: white;
+	margin: 2%;
 	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
 	border-radius : var(--borderRadiusOfLogin);
 }
@@ -158,6 +189,23 @@ body{
 	background-color: var(--secondaryColor);
 	align-self: center;
 }
+.OptionField{
+	width: 25%;
+}
+.QuestionField{
+	width: 25%;
+}
+.SubjectField{
+	width: 15%;
+}
+.FunctionsField{
+	width: 15%;
+	text-align: center;
+	margin: auto;
+}
+.AnswerField{
+	width: 20%;
+}
 .TestDeletion{
 	background-color: var(--deletionColor);
 }
@@ -248,7 +296,7 @@ body{
 	border-radius : var(--borderRadiusOfLogin);
 	width: 100%;
 	margin: 2%;
-	padding: 1%;
+	padding: 2%;
 }
 .MainTable td, .MainTable th{
 	border-radius : var(--borderRadiusOfLogin);
@@ -270,6 +318,7 @@ body{
 }
 .OptionChangeHolder{
 	width: 100%;
+	display: inline-flex;
 }
 .OptionChange, .NewQuestionInput, .NewSubjectInput, .DatabaseAddQuestion, .NewDataInput, .NewAnswerInput{
 	background-color: var(--secondaryColor);
@@ -278,6 +327,11 @@ body{
 	padding: 2%;
 	border-radius : var(--borderRadiusOfLogin);
 	border: var(--borderSizeOfOther) solid var(--borderColorOfLogin);
+}
+.OptionChange{
+	display: inline-flex;
+	width: auto;
+	flex-grow: 1.2;
 }
 .CreationButton{
 	background-color: var(--secondaryColor);

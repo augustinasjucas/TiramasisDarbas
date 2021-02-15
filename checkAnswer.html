@@ -52,9 +52,10 @@
 		document.getElementById("ProcentsHolder").innerHTML = (ThisAnswer.Percentage*100).toFixed(2);;
 	}
 	function Make(ind, what){
+		var Styles = ["QuestionField", "SubjectField", "AnswerField", "OptionsField", "FunctionsField"];
 		for(var i = 0; i < 5; i++){
 			var Place1 = document.getElementById(i+'Col'+ind);
-			Place1.setAttribute('class', 'Correct'+what);
+			Place1.setAttribute('class', 'Correct'+what + " " +  Styles[i]);
 		}
 		if(ind < ThisAnswer.Answers.length){
 			ThisAnswer.Answers[ind].IsCorr = what;
@@ -89,11 +90,11 @@
 		var Table = CreateTable("", "MainTable", [Dictionary['Question'], Dictionary['QuestionType'], Dictionary['CorrectAnswer'], Dictionary['ChosenAnswer'], Dictionary['Functions']]);
 		for(var i = 0; i < answers.length; i++){
 			var Tr = CreateTr('Row'+i, 'Row');
-			Tr.append(CreateTd('0Col'+i, "Correct"+answers[i].IsCorr, answers[i].Question));
-			Tr.append(CreateTd('1Col'+i, "Correct"+answers[i].IsCorr, Dictionary[answers[i].Type]));
-			Tr.append(CreateTd('2Col'+i, "Correct"+answers[i].IsCorr, (answers[i].CorAnswer == "" ? "Nenurodyta" : answers[i].CorAnswer)));
-			Tr.append(CreateTd('3Col'+i, "Correct"+answers[i].IsCorr, (answers[i].ChoAnswer == "-1" || answers[i].ChoAnswer == "" ? "Nepasirinkta" : answers[i].ChoAnswer)));
-			var kas = CreateTd('4Col'+i, "Correct"+answers[i].IsCorr, "");
+			Tr.append(CreateTd('0Col'+i, "Correct"+answers[i].IsCorr + " QuestionField", answers[i].Question));
+			Tr.append(CreateTd('1Col'+i, "Correct"+answers[i].IsCorr + " SubjectField", Dictionary[answers[i].Type]));
+			Tr.append(CreateTd('2Col'+i, "Correct"+answers[i].IsCorr + " AnswerField", (answers[i].Type == "Multiple" ? answers[i].CorAnswer : (answers[i].CorAnswer == "" ? "Nenurodyta" : answers[i].CorAnswer))));
+			Tr.append(CreateTd('3Col'+i, "Correct"+answers[i].IsCorr + " OptionsField", (answers[i].ChoAnswer == "-1" || answers[i].ChoAnswer == "" ? "Nepasirinkta" : answers[i].ChoAnswer)));
+			var kas = CreateTd('4Col'+i, "Correct"+answers[i].IsCorr + " FunctionsField", "");
 			kas.append(TwoButtons(i));
 			Tr.append(kas);
 			Table.append(Tr);

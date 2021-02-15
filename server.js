@@ -160,14 +160,24 @@ function FindAnswers(code){
 function ProcessAnswer(answer){
 	var correct = 0; var wrong = 0; var dvej = 0;
 	for(var i = 0; i < answer.Answers.length; i++){
-		if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer && answer.Answers[i].ChoAnswer != ""){
-			answer.Answers[i].IsCorr = 1;
-			correct++;
-		}else{
-			answer.Answers[i].IsCorr = 0;
-			wrong++;
-		}
-		if(answer.Answers[i].CorAnswer == ""){ answer.Answers[i].IsCorr = 2; dvej = 1;}
+        if(answer.Answers[i].Type == 'Multiple'){
+            if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer) {
+                correct++;
+                answer.Answers[i].IsCorr = 1;
+            }else{
+                answer.Answers[i].IsCorr = 0;
+                wrong++;
+            }
+        }else{
+            if(answer.Answers[i].ChoAnswer == answer.Answers[i].CorAnswer && answer.Answers[i].ChoAnswer != ""){
+                answer.Answers[i].IsCorr = 1;
+                correct++;
+		      }else{
+                  answer.Answers[i].IsCorr = 0;
+                  wrong++;
+		      }
+		      if(answer.Answers[i].CorAnswer == ""){ answer.Answers[i].IsCorr = 2; dvej = 1;}
+        }
 	}
 	answer.Percentage = (correct *1.0) / (correct+wrong + 0.0);
 	if(dvej == 0) answer.Status = "Checked";
@@ -208,7 +218,7 @@ users = [];
 connections = [];
 names = [];
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 12345);
 console.log('Serveris veikia');
 
 app.get('/teacher', function(req, res){
@@ -317,6 +327,7 @@ io.sockets.on('connection', function(socket){
 		testai.visiTestai[data.testIndex].Questions[data.questionIndex].Hidden = 1;
 	});
 	socket.on('EditQuestionInTest', function(data){
+        console.log("daroma!" + data.testIndex + ", questionIndex = " + data.questionIndex);
 		testai.visiTestai[data.testIndex].Questions[data.questionIndex] = data.question;
 	});
 	socket.on('ChangeTime', function(data){

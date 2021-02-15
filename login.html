@@ -12,13 +12,14 @@
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 <body>
-
 	<div class="loginHolder">
 		<div class="UpperHolderLogin"><h1 class="LoginName">Prisijungimas</h1></div>
-		<div class="LowerHolderLogin">
-			<input class="inputText" type="text" id="username" placeholder="Prisijungimo vardas" /> <br />
-			<input class="inputText" type="password" id="password" placeholder="Slaptažodis" /> <br />
-			<button onClick="Login()" class="SubmitLogin" id="loginButt">Prisijungti</button>
+			<div class="LowerHolderLogin">
+				<!-- <form> -->
+					<input class="inputText" type="text" id="username" placeholder="Prisijungimo vardas" /> <br />
+					<input class="inputText" type="password" id="password" placeholder="Slaptažodis" /> <br />
+					<input type="submit" onClick="Login()" class="SubmitLogin" id="loginButt" value="Prisijungti" />
+				<!-- </form> -->
 		</div>
 	</div>
 
@@ -30,7 +31,6 @@
 		var username = document.getElementById('username').value;
 		var password = document.getElementById('password').value;
 		socket.emit('CheckValidity', {username: username, password: password});
-
 	}
 	socket.on('GetValidity', function(data){
 		if(data.valid == true){
@@ -38,8 +38,7 @@
 			sessionStorage.setItem('password', data.password);
 			window.location.href ='/testai';
 		}else{
-			alert("Neteisingas prisijungimo vardas arba slaptažodis");
-
+			DisplayError(Dictionary['WrongCredentials']);
 		}
 	});
 </script>
